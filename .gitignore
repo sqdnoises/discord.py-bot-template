@@ -1,3 +1,9 @@
-__pycache__/
+# cache and virtual environments
+**/__pycache__
 .venv/
-**/.env
+
+# for using .env_ file as the main .env file instead of
+# the already existing .env file which has placeholders
+# instead of real values that would be used
+.env_
+dotenv.py
