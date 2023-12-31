@@ -1,3 +1,5 @@
 python-dotenv
 discord.py
 git+https://github.com/Rapptz/asqlite.git
+aiohttp
+setuptools
