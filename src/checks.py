@@ -13,7 +13,6 @@ def guild_only(ctx: Context = None):
 def is_in_vc(ctx: Context = None):
     async def predicate(ctx: Context = ctx):
         if not ctx.author.voice:
-            await ctx.reply("Join a voice channel!")
             return False
         else:
             return True

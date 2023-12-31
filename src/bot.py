@@ -31,27 +31,22 @@ async def setup_hook():
     mprint(f"running on python {sys.version.split()[0]}; discord.py {pkg_resources.get_distribution('discord.py').version}")
     mprint()
     
-#    loaded = []
-#    exclude = config.COGS_EXCLUDE
-#    for ext in os.listdir("cogs"):
-#        if ext in exclude: continue
-#        if ext.endswith(".py"):
-#            extension = "cogs."+ext[:-3]
-#            loaded.append(extension)
-#            await bot.load_extension(extension)
+    loaded = []
+    exclude = config.COGS_EXCLUDE
+    for ext in os.listdir("cogs"):
+        if ext in exclude: continue
+        if ext.endswith(".py"):
+            extension = "cogs."+ext[:-3]
+            loaded.append(extension)
+            await bot.load_extension(extension)
     
-    #logging.info("the following cogs have #been loaded:\n"+
-#      (" "*34)+ f"{', '.join(loaded)}")
+    logging.info("the following cogs have been loaded:\n"+
+      (" "*34)+ f"{', '.join(loaded)}")
     
     logging.info("logged in successfully")
     logging.info(f"user: {bot.user} ({bot.user.id})")
 
 bot.setup_hook = setup_hook
 
-logging.info("starting heardle bot")
-
-@bot.command()
-async def hello(ctx):
-    await ctx.send("hello")
-
+logging.info("starting template bot")
 bot.run(os.getenv("TOKEN"), log_handler=None)

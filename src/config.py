@@ -1,4 +1,4 @@
-PREFIX = ","
+PREFIX = "!"
 ADMINS = []
 
-COGS_EXCLUDE = ["__init__.py", "utils.py"]
+COGS_EXCLUDE = ["__init__.py", "template.py"]

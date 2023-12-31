@@ -1,96 +1,74 @@
-from typing import Optional
+import utils
+from typing import Optional, Literal
+from datetime import datetime
+
 import discord
 from discord.ext import commands
 
 class Context(commands.Context):
-    def __init__(self, *args, **kwargs) -> None:
+    """Utility class for commands that is used to easily interact with commands."""
+
+    def __init__(self, *args, **kwargs) -> None: # initialize the class
         super().__init__(*args, **kwargs)
         self.voice: Optional[discord.VoiceState] = self.author.voice
+        self.cleaned_up_code = utils.cleanup_code(self.message.content)
     
     async def react(self, emoji: discord.Emoji) -> discord.Reaction:
         """Add reaction to a message"""
         return await self.message.add_reaction(emoji)
+    
+    def create_board(self, title: str = None, description: str = None, url: str = None, timestamp: datetime = None) -> discord.Embed:
+        """Return a discord.Embed"""
+        return discord.Embed(
+            title=title,
+            description=description,
+            url=url,
+            color=0x2b2d31, # Dark Gray Embed Background
+            timestamp=timestamp
+        )
+
+    async def board(self, title: str = None, description: str = None, url: str = None, timestamp: datetime = None, reply: bool = False) -> discord.Message:
+        """Send a board message"""
+        board = self.create_board(title, description, url, timestamp)
+        if reply:
+            return await self.reply(embed=board)
+        else:
+            return await self.send(embed=board)
+    
+    async def yes(self) -> discord.Message:          return await self.react("✅")
+    async def tick(self) -> discord.Message:         return await self.react("✅")
+    async def check(self) -> discord.Message:        return await self.react("✅")
+    async def green(self) -> discord.Message:        return await self.react("✅")
+    async def success(self) -> discord.Message:      return await self.react("✅")
+
+    async def x(self) -> discord.Message:            return await self.react("❌")
+    async def no(self) -> discord.Message:           return await self.react("❌")
+    async def red(self) -> discord.Message:          return await self.react("❌")
+    async def fail(self) -> discord.Message:         return await self.react("❌")
+    async def cross(self) -> discord.Message:        return await self.react("❌")
+    async def failure(self) -> discord.Message:      return await self.react("❌")
+    async def unsuccessful(self) -> discord.Message: return await self.react("❌")
 
 class Bot(commands.Bot):
-    def __init__(self, command_prefix: str, *args, intents: discord.Intents = discord.Intents.all(), **kwargs) -> None:
+    """The main bot class which handles everything, including handling of events, commands, interactions and the bot itself."""
+
+    def __init__(self, command_prefix: str, *args, intents: discord.Intents = discord.Intents.all(), **kwargs) -> None: # initialize the class
         super().__init__(command_prefix=command_prefix, intents=intents, *args, **kwargs)
-        self.vc_bindings = {} # {discord.Member: discord.VoiceClient}
+        # edit the bot
     
     async def get_context(self, message: discord.Message, *, cls: commands.Context = Context) -> Context:
         """Get Context from a discord.Message"""
         return await super().get_context(message, cls=cls)
     
-    def get_binding(self, *, member: discord.Member = None, voice_client: discord.VoiceClient = None) -> list:
-        """Get voice client for a user or vice versa"""
-        
-        if member is not None and voice_client is None:
-            for m, vc in self.vc_bindings.items():
-                if m == member:
-                    return [m, vc]
-        
-        elif member is None and voice_client is not None:
-            for m, vc in self.vc_bindings.items():
-                if vc == voice_client:
-                    return [m, vc]
-        
-        elif member is not None and voice_client is not None:
-            for m, vc in self.vc_bindings.items():
-                if m == member and vc == voice_client:
-                    return [m, vc]
-        
-        return [] # if not found or both arguments not specified
-    
-    async def bind_to(self, member: discord.Member, connect: bool = True) -> bool:
-        """Bind a guild voice client to a member in `bot.vc_bindings` variable"""
-        
-        if not member.guild.voice_client: # if bot is not connected to voice
-            if member.voice: # and member is connected to voice
-                if connect: # connect to the voice
-                    await member.voice.channel.connect()
-                    await member.guild.change_voice_state(self_mute=False, self_deafen=True)
-                
-                self.vc_bindings.update({member: member.guild.voice_client}) # update bindings
-                return True # indicate bot has connected to a voice
-            
-            else: # and member is not connected to voice
-                if member in self.vc_bindings: # if member is in vc bindings
-                    self.vc_bindings.pop(member) # remove them
-                
-                return False # indicate bot did not connect to a voice
-        
-        else: # if bot is connected to voice
-            if member.voice: # and the member is connected to voice
-                if member.voice.channel == member.guild.voice_client.channel: # and member voice is same as bot voice
-                    return True # indicate bot is connected to members voice
-                
-                else: # and member is not in same voice as the bot
-                    binding = self.get_binding(voice_client=member.guild.voice_client) # find the binding of the voice the bot is in
-                    if binding: # if the binding exists
-                        if binding[0] == member: # if the binding member is the member
-                            await member.guild.voice_client.move_to(member.voice.channel) # switch to members voice
-                            return True # indicate bot is in members voice
-                        
-                        else:
-                            return False # indicate bot is not connected to members voice
-                    
-                    else: # if the binding doesn't exist
-                        return False # indicate bot is not connected to members voice
-            
-            else: # if the member is not connected to voice
-                return False # indicate bot did not connect to members voice
-    
-    async def unbind_from(self, voice_client: discord.VoiceClient, disconnect: bool = True) -> bool:
-        """Unbind a member from a guild voice client in `bot.vc_bindings` variable"""
-        
-        binding = self.get_binding(voice_client=voice_client)
-        if binding: # if the binding exists
-            m, vc = binding
-            
-            if disconnect and vc.is_connected(): # if voice is connected, disconnect
-                await vc.disconnect()
-            self.vc_bindings.pop(m)
-            
-            return True # indicate that the bot unbinded from the voice
-                    
-        else: # if the binding doesn't exist
-            return False # indicate that the bot could not unbind from the voice
+    def create_activity(name: str, type: Literal["playing", "streaming", "listening", "watching"] = "playing", *args, **kwargs) -> discord.Activity:
+        """Create an activity for a given type"""
+
+        match type:
+            case "playing":
+                return discord.Game(name=name, *args, **kwargs)
+            case "streaming":
+                return discord.Streaming(name=name, *args, **kwargs)
+            case "listening":
+                return discord.Activity(type=discord.ActivityType.listening, name=name, *args, **kwargs)
+            case "watching":
+                return discord.Activity(type=discord.ActivityType.watching, name=name, *args, **kwargs)
