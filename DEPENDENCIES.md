@@ -27,10 +27,6 @@ An installer for the latest version of Python must have been downloaded:
 
 ![python installer file downloaded](images/installing%20python/python_installer_file_downloaded.png)
 
-![python installer file downloaded](images/installing%20python/python_installer_file_downloaded.png)
-
-![python installer file downloaded](images/installing%20python/python_installer_file_downloaded.png)
-
 Open this downloaded file and grant 
 
 
