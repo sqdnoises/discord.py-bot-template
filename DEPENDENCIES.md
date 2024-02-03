@@ -54,7 +54,7 @@ A black box will appear just like this one:
 
 ![terminal window](images/installing%20python/checking%20that%20python%20is%20installed/terminal%20window.png)
 
-Type the commands below in the `Terminal` or `Command Prompt` window and press enter to check `Python`'s and Python's package manager `pip`'s version so we are sure that Python is installed correctly.
+Type the commands below in the `Terminal` or `Command Prompt` window and press enter to check `python`'s and Python's package manager `pip`'s version so we are sure that Python is installed correctly.
 
 ```
 python -V
