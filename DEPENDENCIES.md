@@ -99,7 +99,7 @@ If it does, Hurray! **You've installed Python <img src="https://python.org/favic
 ### On Termux <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/Termux.svg" alt="Termux" height="16">
 Unlike Windows, installing Python requires extra packages you need to install to be able to use `pip` and to be able to make virtual environments (`venv`).
 
-Open **Termux <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/Termux.svg" alt="Termux" height="16">** and install **Python <img src="https://python.org/favicon.ico" alt="Python" height="12">** by using the following commands:
+Open **Termux <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/Termux.svg" alt="Termux" height="12">** and install **Python <img src="https://python.org/favicon.ico" alt="Python" height="12">** by using the following commands:
 ```
 apt update
 apt install python python-pip python-venv -y
