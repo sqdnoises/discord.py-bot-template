@@ -4,7 +4,7 @@ This template of a [`discord.py` <img src="https://raw.githubusercontent.com/Rap
 
 The following requirements must be met before using this template:
 
-- [**`Python 3.10.x` <img src="https://python.org/favicon.ico" alt="Python" height="12"> or above**](#installing-python)
+- [**`Python 3.10.x` <img src="https://python.org/favicon.ico" alt="Python" height="12"> or above**](#installing-python-)
 - Python packages from [`requirements.txt`](requirements.txt) must be installed ([**Installing `pip` requirements**](#installing-pip-requirements))
 
 You can click the hyperlinks above to see how to install the clicked dependency or you can see how to install them below.
