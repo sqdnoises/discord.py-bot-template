@@ -20,7 +20,7 @@ Head to [**Python downloads** <img src="https://python.org/favicon.ico" alt="Pyt
 
 ![python.org downloads page](images/installing%20python/python.org%20downloads%20page.png)
 
-An installer for the latest version of Python must have been downloaded:
+An installer for the latest version of **Python <img src="https://python.org/favicon.ico" alt="Python" height="12">** must have been downloaded:
 
 ![python installer file downloaded](images/installing%20python/python%20installer%20file%20downloaded.png)
 
