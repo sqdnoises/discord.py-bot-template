@@ -31,11 +31,13 @@ Open the download file and this window will pop up.
 Make sure to check `Add python.exe to PATH`.
 
 ![add python.exe to path](images/installing%20python/add%20python.exe%20to%20path.png)
+
 **NOTE:** *It is not neessary to check `Use admin privilages when installing py.exe` but if you do have admin privileges, it's recommended to use it.*
 
 Wait for Python to install (might take a few minutes) and finally you will see this:
 
 ![python setup was successful](images/installing%20python/setup%20was%20successful.png)
+
 **NOTE:** *If you see `DISABLE PATH LENGTH LIMIT` and you have administrator priviliges, it is highly advised you disable the path length limit.*
 
 **Python <img src="https://python.org/favicon.ico" alt="Python" height="12"> has been installed.**
@@ -48,7 +50,8 @@ If you are on Windows 11 <img src="https://upload.wikimedia.org/wikipedia/common
 If you are on Windows 10 <img src="https://upload.wikimedia.org/wikipedia/commons/4/48/Windows_logo_-_2012_%28dark_blue%29.svg" alt="Windows 10" height="12"> and you don't have the `Windows Terminal` app installed, search for `Command Prompt` in the start menu.
 
 ![start menu terminal search](images/installing%20python/checking%20that%20python%20is%20installed/start%20menu%20terminal%20search.png)
-**NOTE:** *Use `Command Prompt` if you're on Windows 10 <img src="https://upload.wikimedia.org/wikipedia/commons/4/48/Windows_logo_-_2012_%28dark_blue%29.svg" alt="Windows 10" height="12"> and don't have `Windows Terminal` instlled.*
+
+**NOTE:** *Use `Command Prompt` if you're on Windows 10 <img src="https://upload.wikimedia.org/wikipedia/commons/4/48/Windows_logo_-_2012_%28dark_blue%29.svg" alt="Windows 10" height="12"> and don't have `Windows Terminal` installed.*
 
 A black box will appear just like this one:
 
