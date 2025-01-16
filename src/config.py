@@ -58,11 +58,11 @@ LOG_NOT_FOUND_COMMANDS_TO_CONSOLE = True
 #                              command that does not exist. 
 # \n is a newline.
 # The value can be set to None (without the quotes) to disable it.
-MISSING_ARGUMENT_MESSAGE = "Missing argument `{argument}` of type `{type}`.\nFor more information refer to `{prefix}help {command.qualified_name}`."
+MISSING_ARGUMENT_MESSAGE = "Missing argument `{argument}` of type `{type}`.\nFor more information refer to `{clean_prefix}help {command.qualified_name}`."
 NO_PERMISSIONS_MESSAGE = "You don't have permissions to use this command."
 BOT_NO_PERMISSIONS_MESSAGE = ("I'm missing permissions to run this command.\n"
                               "Permissions required: {joined_permissions_code}")
-COMMAND_NOT_FOUND_MESSAGE = "Command `{ctx.prefix}{command}` not found."
+COMMAND_NOT_FOUND_MESSAGE = "Command `{ctx.clean_prefix}{command}` not found."
 
 # ITEMS_PER_PAGE - The amount of items to show in any sort of command with multiple pages
 ITEMS_PER_PAGE = 5
