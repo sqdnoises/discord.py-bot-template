@@ -9,7 +9,7 @@ a discord.py bot template that I use for my bots.\
 you're free to use this template if you like.
 
 ## License
-You must have received a copy of the [LICENSE](LICENSE) file with this source code.\
+You must have received a copy of the [<kbd> LICENSE </kbd>](LICENSE) file with this source code.\
 This source code is licensed under the **MIT License**.
 
 </div>
