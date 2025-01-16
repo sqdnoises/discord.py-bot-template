@@ -1,6 +1,6 @@
 from typing import (
     Any, Iterable,
-    Callable, Awaitable, Coroutine,
+    Callable, Awaitable,
     TypeVar, ParamSpec
 )
 
