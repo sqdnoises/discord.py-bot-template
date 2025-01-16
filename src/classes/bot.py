@@ -54,7 +54,8 @@ class Bot(commands.Bot):
             intents = intents,
             tree_cls = tree_cls,
             *args,
-            **kwargs
+            **kwargs,
+            help_command = commands.DefaultHelpCommand()
         )
         self.uptime = None
         self.prisma = Prisma(auto_register=True)
