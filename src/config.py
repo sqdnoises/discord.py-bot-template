@@ -41,6 +41,11 @@ SAVE_DISCORD_LOGS = True
 # LOG_CHANNEL - A channel ID which the bot can see where bot logs are sent
 LOG_CHANNEL = 1318631693929680896
 
+# NOTIFY_ALL_ERRORS_TO_USER - Whether to send an embed to the user with an error for
+#                             all kinds of unhandled errors when an app command fails.
+#                             (slash commands, context menu, buttons, etc.)
+NOTIFY_ALL_ERRORS_TO_USER = True
+
 # LOG_COMMANDS_TO_CONSOLE           - Log every text and slash command being used by a
 #                                     user to console
 # LOG_NOT_FOUND_COMMANDS_TO_CONSOLE - Log every text command that users try to use but do
