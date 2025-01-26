@@ -6,7 +6,7 @@ from discord.ext import commands
 
 class Example(Cog):
     """Example cog."""
-
+    
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
         self.emoji = "🥺"
