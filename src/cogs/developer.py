@@ -107,7 +107,7 @@ class Developer(Cog):
             if ctx.command and len(ctx.args) > 2:
                 ext = "cogs."+ctx.args[2]
                 logging.error(f"failed to {ctx.command.name} `{ext}`: `{error.__class__.__name__}`", exc_info=error)
-                await ctx.send(f"❌ Error occured while {ctx.command.name}ing the extension: `{ext}`\n"+
+                await ctx.send(f"❌ Error occurred while {ctx.command.name}ing the extension: `{ext}`\n"+
                                utils.code(f"{e.__class__.__name__}: {str(e)}"))
             
             else:
@@ -347,9 +347,9 @@ class Developer(Cog):
                     await ctx.send(embed=embed)
                 except Exception as e:
                     error = utils.error(e, include_module=True)
-                    await ctx.send(f"An error occured.\n"
+                    await ctx.send(f"An error occurred.\n"
                                    f"{error}")
-                    logging.error("error occured while sending exec() failed embed", exc_info=e)
+                    logging.error("error occurred while sending exec() failed embed", exc_info=e)
             
             func = env["func"]
             try:
@@ -423,9 +423,9 @@ class Developer(Cog):
                     await ctx.send("Embed too big to send. Check console.")
                 except Exception as e:
                     error = utils.error(e)
-                    await ctx.send(f"An error occured.\n"
+                    await ctx.send(f"An error occurred.\n"
                                    f"{error}")
-                    logging.error("error occured while sending execution failed embed", exc_info=e)
+                    logging.error("error occurred while sending execution failed embed", exc_info=e)
             
             else:
                 t = time.monotonic() - t # in seconds
@@ -496,9 +496,9 @@ class Developer(Cog):
                     await ctx.send("Embed too big to send. Check console.")
                 except Exception as e:
                     error = utils.error(e)
-                    await ctx.send(f"An error occured.\n"
+                    await ctx.send(f"An error occurred.\n"
                                    f"{error}")
-                    logging.error("error occured while sending exec successful embed", exc_info=e)
+                    logging.error("error occurred while sending exec successful embed", exc_info=e)
     
     @commands.guild_only()
     @commands.command()
