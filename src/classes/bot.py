@@ -60,7 +60,7 @@ class Bot(commands.Bot):
         self.uptime = None
         self.prisma = Prisma(auto_register=True)
         
-        self.all_commands = {}
+        self.all_app_commands = {}
         
         self.log_channel_id = config.LOG_CHANNEL
         self.log_channel = None
