@@ -294,7 +294,7 @@ class Developer(Cog):
         
         async with ctx.typing():
             t = time.monotonic()
-                    
+            
             try:
                 exec(to_compile, env)
             
