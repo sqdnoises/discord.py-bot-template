@@ -16,6 +16,8 @@ __pycache__/
 *.pyo
 *.swp
 *.tmp
+.cache
+*.cache
 .DS_Store
 
 # virtual environments
