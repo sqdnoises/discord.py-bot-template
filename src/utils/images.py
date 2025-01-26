@@ -5,6 +5,8 @@ Image-related utilities.
 from io     import BytesIO
 from typing import TYPE_CHECKING, Optional
 
+import utils.bot
+
 import aiohttp
 import numpy as np
 from PIL             import Image
@@ -16,7 +18,7 @@ __all__ = (
     "get_dominant_color"
 )
 
-async def fetch_image(image_url: str, session: Optional[aiohttp.ClientSession] = None, **kwargs) -> PILImage:
+async def fetch_image(image_url: str, *args, session: Optional[aiohttp.ClientSession] = None, **kwargs) -> PILImage:
     """
     Fetches an image from a URL asynchronously and returns a PIL Image object.
 
@@ -29,15 +31,8 @@ async def fetch_image(image_url: str, session: Optional[aiohttp.ClientSession] =
         PILImage: The image object.
     """
     
-    if session is None:
-        session = aiohttp.ClientSession(**kwargs)
-    
-    async with session.get(image_url) as response:
-        if response.status == 200:
-            image_data = await response.read()
-            return Image.open(BytesIO(image_data)).convert("RGBA")
-        else:
-            raise ValueError(f"Failed to fetch image. Status code: {response.status}")
+    image_data = await utils.bot.get_raw_content_data(image_url, *args, session=session, **kwargs)
+    return Image.open(BytesIO(image_data)).convert("RGBA")
 
 def get_dominant_color(image: Image.Image) -> tuple[int, int, int]:
     """
