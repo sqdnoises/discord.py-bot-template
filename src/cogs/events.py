@@ -1,10 +1,12 @@
+import traceback
+
 import utils
+import config
+from logger  import logging
+from classes import Bot, Cog, Context
+
 import aiohttp
 import requests
-from logger  import logging
-
-import config
-from classes import Bot, Cog, Context
 
 import discord
 from discord     import app_commands
@@ -124,13 +126,19 @@ class Events(Cog):
         else:
             logging.error("Ignoring exception in command tree", exc_info=error)
         
-        if isinstance(error, app_commands.CheckFailure):
-            return
-        
         if isinstance(error, app_commands.CommandInvokeError):
             e = error.original
         else:
             e = error
+        
+        if isinstance(e, app_commands.CheckFailure):
+            return
+        
+        embed = discord.Embed(
+            description = f"{error_txt}\n"
+                          f"{utils.error(e, include_module=True)}",
+            color = discord.Color.brand_red()
+        )
         
         if isinstance(e, requests.HTTPError) or isinstance(e, aiohttp.ClientError):
             classname = (e.__class__.__module__+"." if e.__class__.__module__ != "builtins" else "")+e.__class__.__name__
@@ -140,26 +148,30 @@ class Events(Cog):
             ).set_author(
                 name = f"❌ {classname}"
             )
-            
-            # try except hell
-            try:
-                await interaction.response.send_message(embed=embed)
-            except:
-                try:
-                    await interaction.followup.send(embed=embed)
-                except:
-                    try:
-                        await interaction.edit_original_response(content=None, embed=embed, view=None)
-                    except:
-                        await interaction.channel.send(f"{interaction.user.mention} {error_txt}", embed=embed) # type: ignore
-            
+        
+        if not config.NOTIFY_ALL_ERRORS_TO_USER:
             return
         
-        await interaction.channel.send(interaction.user.mention, embed=discord.Embed( # type: ignore
-            description = f"{error_txt}\n"
-                          f"{utils.error(e, include_module=True)}",
-            color = discord.Color.brand_red()
-        ))
+        try:
+            await interaction.response.send_message(embed=embed)
+        except:
+            try:
+                await interaction.followup.send(embed=embed)
+            except:
+                try:
+                    await interaction.edit_original_response(content=None, embed=embed, view=None)
+                except:
+                    if interaction.channel is None or (
+                        isinstance(interaction.channel, discord.CategoryChannel)
+                        or isinstance(interaction.channel, discord.ForumChannel)
+                    ):
+                        return
+                    
+                    try:
+                        await interaction.channel.send(f"{interaction.user.mention} {error_txt}", embed=embed)
+                    except Exception as e:
+                        logging.debug("Failed to notify error to user.", do_save=False)
+                        logging.debug(f"Failed to notify error to user.\n{''.join(traceback.format_exception(e))}", do_print=False)
 
 async def setup(bot: Bot) -> None:
     await bot.add_cog(Events(bot))
