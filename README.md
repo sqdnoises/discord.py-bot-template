@@ -83,9 +83,6 @@ Open [`src/config.py`](src/config.py) in the editor of your choice and edit the 
 
 Make sure you update `ADMINS` and `LOG_CHANNEL` to the appropriate values.
 
-### setup emojis
-Upload the emojis from [`assets/emojis`](assets/emojis/) to the Discord bot's dashboard's emoji section and copy and paste the appropriate emoji markdown values in [`src/emojis.py`](src/emojis.py).
-
 ### running
 ```bash
 source .venv/bin/activate  # For Linux
