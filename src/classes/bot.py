@@ -167,6 +167,7 @@ class Bot(commands.Bot):
         logging.debug(f"app commands fetched ({len(self.all_app_commands)})")
     
     def slash_mention(self, command: str) -> str:
+        """Mention an application command like a normal user or channel mention"""
         if command.startswith("/"):
             command = command[1:]
         parent = command.split(maxsplit=1)[0]
