@@ -1,4 +1,7 @@
-from typing import Any, TYPE_CHECKING
+from typing import (
+    TYPE_CHECKING, Any,
+    Optional, Sequence
+)
 from datetime import datetime
 
 import utils
@@ -7,7 +10,8 @@ if TYPE_CHECKING:
     from bot import Bot
 
 import discord
-from discord.ext import commands
+from discord.ext   import commands
+from discord.utils import MISSING
 
 class Context(commands.Context):
     """Utility class for commands that is used to easily interact with commands."""
@@ -25,8 +29,44 @@ class Context(commands.Context):
         self.voice = self.author.voice if isinstance(self.author, discord.Member) else None
         self.cleaned_up_code = utils.cleanup_code(self.message.content)
     
+    async def edit(
+        self,
+        *,
+        content: Optional[str] = MISSING,
+        embed: Optional[discord.Embed] = MISSING,
+        embeds: Sequence[discord.Embed] = MISSING,
+        attachments: Sequence[discord.Attachment | discord.File] = MISSING,
+        suppress: bool = False,
+        delete_after: Optional[float] = None,
+        allowed_mentions: Optional[discord.AllowedMentions] = MISSING,
+        view: Optional[discord.ui.View] = MISSING
+    ) -> discord.Message:
+        """Edit the message"""
+        
+        if embed is not MISSING:
+            return await self.message.edit(
+                content = content,
+                embed = embed,
+                attachments = attachments,
+                suppress = suppress,
+                delete_after = delete_after,
+                allowed_mentions = allowed_mentions,
+                view = view
+            )
+        
+        else:
+            return await self.message.edit(
+                content = content,
+                embeds = embeds,
+                attachments = attachments,
+                suppress = suppress,
+                delete_after = delete_after,
+                allowed_mentions = allowed_mentions,
+                view = view
+            )
+    
     async def react(self, emoji: str | discord.Emoji) -> None:
-        """Add reaction to a message"""
+        """Add reaction to the message"""
         await self.message.add_reaction(emoji)
     
     def create_board(
