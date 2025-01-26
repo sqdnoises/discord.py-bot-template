@@ -17,8 +17,6 @@ def print_versions():
     logging.info(f"discord.py {pkg_resources.get_distribution('discord.py').version}")
 
 def print_terminal_size():
-    """Log the terminal size to console"""
-    
     try:
         terminal = os.get_terminal_size()
     except:

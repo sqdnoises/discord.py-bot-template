@@ -17,8 +17,11 @@ from typing    import (
 from itertools import islice
 
 __all__ = (
+    "format_number",
     "list_modules",
     "mprint",
+    "camelize",
+    "timestamp",
     "trim_and_add_suffix",
     "strip_color",
     "code",
@@ -33,6 +36,50 @@ __all__ = (
 )
 
 T = TypeVar("T")
+
+def format_number(number: int, decimal_points: int = 0, *, pad_decimal: bool = False) -> str:
+    """
+    Formats a large number with suffixes like K, M, B, etc. based on its magnitude.
+    
+    Parameters:
+    - number (int): The number to be formatted.
+    - decimal_points (int): The number of decimal places to display. Default is 0.
+    - pad_decimal (bool): If True, adds trailing zeroes to decimals if needed. Default is False.
+    
+    Returns:
+    - str: The formatted string with appropriate suffix and decimal places.
+    
+    Example:
+    >>> format_number(1000000)
+    '1M'
+    >>> format_number(123456, decimal_points=2)
+    '123.46K'
+    >>> format_number(123000, decimal_points=2, pad_decimal=False)
+    '123K'
+    """
+    
+    if number < 1000:
+        return str(number)
+    
+    suffixes = ["K", "M", "B", "T"]
+    magnitude = 0
+    num = number
+    
+    while num >= 1000 and magnitude < len(suffixes):
+        magnitude += 1
+        num /= 1000
+    
+    # Round the number to the specified decimal places
+    if decimal_points:
+        formatted_number = f"{num:.{decimal_points}f}"
+    else:
+        formatted_number = str(int(num))
+    
+    # Remove trailing decimals if pad_decimal is False
+    if not pad_decimal and decimal_points:
+        formatted_number = formatted_number.rstrip("0").rstrip(".")
+    
+    return f"{formatted_number}{suffixes[magnitude-1]}"
 
 def list_modules(package: str | Any) -> list[str]:
     if type(package) == str:
@@ -59,6 +106,30 @@ def mprint(text: str = "", fillchar: str = " ", end: str = "\n", flush: bool = F
         
         centered_text = color_stripped.center(width, fillchar).replace(color_stripped, text)
         print(centered_text, end=end, flush=flush)
+
+def camelize(s: str) -> str:
+    string = list(s)
+    punctuate = True
+    for i, c in enumerate(string):
+        if punctuate:
+            string[i] = c.upper()
+        if c not in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789":
+            punctuate = True
+        else:
+            punctuate = False
+    return "".join(string)
+
+def timestamp(seconds: int) -> str:
+    # Calculate hours, minutes, and seconds
+    hours = int(seconds // 3600)
+    minutes = int((seconds % 3600) // 60)
+    seconds = int(seconds % 60)
+    
+    # Determine the format based on the presence of hours
+    if hours > 0:
+        return f"{hours:02}:{minutes:02}:{seconds:02}"
+    else:
+        return f"{minutes:02}:{seconds:02}"
 
 def trim_and_add_suffix(input_string: str, max_length: int, suffix: str = "...") -> str:
     """
