@@ -1,5 +1,5 @@
 __all__ = (
-    "LINK",
+    "EXAMPLE",
 )
 
-LINK = "<:link:1234>"
+EXAMPLE = "<:link:1234>"
