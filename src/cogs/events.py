@@ -152,6 +152,10 @@ class Events(Cog):
         if not config.NOTIFY_ALL_ERRORS_TO_USER:
             return
         
+        def print_error(e: Exception) -> None:
+            logging.debug("Failed to notify error to user.", do_save=False)
+            logging.debug(f"Failed to notify error to user.\n{''.join(traceback.format_exception(e))}", do_print=False)
+        
         try:
             await interaction.response.send_message(embed=embed)
         except:
@@ -160,18 +164,18 @@ class Events(Cog):
             except:
                 try:
                     await interaction.edit_original_response(content=None, embed=embed, view=None)
-                except:
+                except Exception as e:
                     if interaction.channel is None or (
                         isinstance(interaction.channel, discord.CategoryChannel)
                         or isinstance(interaction.channel, discord.ForumChannel)
                     ):
+                        print_error(e)
                         return
                     
                     try:
                         await interaction.channel.send(f"{interaction.user.mention} {error_txt}", embed=embed)
                     except Exception as e:
-                        logging.debug("Failed to notify error to user.", do_save=False)
-                        logging.debug(f"Failed to notify error to user.\n{''.join(traceback.format_exception(e))}", do_print=False)
+                        print_error(e)
 
 async def setup(bot: Bot) -> None:
     await bot.add_cog(Events(bot))
