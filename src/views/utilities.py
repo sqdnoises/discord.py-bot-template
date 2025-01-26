@@ -13,7 +13,7 @@ class InstallView(discord.ui.View):
             self.add_item(discord.ui.Button(
                 label = "Add to your apps", 
                 style = discord.ButtonStyle.link, 
-                url = f"https://discord.com/oauth2/authorize?client_id={application_id}&permissions=8&integration_type=1&scope=applications.commands+bot"
+                url = f"https://discord.com/oauth2/authorize?client_id={application_id}&integration_type=1&scope=applications.commands"
             ))
         
         if guild_install:
