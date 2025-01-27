@@ -1,7 +1,11 @@
 {
-    "python.analysis.typeCheckingMode": "basic",
+    "python.analysis.typeCheckingMode": "standard",
     "python.REPL.enableREPLSmartSend": false,
     "vscord.app.privacyMode.enable": false,
+    "python.analysis.diagnosticSeverityOverrides": {
+        "reportUnusedImport": "warning",
+        "reportIncompatibleMethodOverride": "none"
+    },
     "material-icon-theme.folders.associations": {
         "cogs": "Plugin",
         "cog": "Plugin"
