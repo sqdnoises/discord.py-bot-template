@@ -1,14 +1,5 @@
 # The .gitignore file tells Git which files or folders to ignore.
 # These ignored files won't be tracked or saved by Git.
-#
-# Common examples are:
-#
-# 1. Cache files: __pycache__/, *.pyc
-# 2. Virtual environments: venv/, .venv/
-# 3. Editor/IDE settings: .vscode/
-# 4. Logs and temp files: *.log, *.tmp
-# 5. Sensitive files: .env
-# 6. Database files: *.db
 
 # cache and temp
 __pycache__/
