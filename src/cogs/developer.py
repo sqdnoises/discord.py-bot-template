@@ -172,10 +172,10 @@ class Developer(Cog):
         logging.warning("closing bot using await bot.close()")
         await self.bot.close()
     
-    @commands.command(name="generate-invite", aliases=["invite", "invite-link"])
+    @commands.command(name="generate-invite", aliases=["invite"])
     async def generate_invite(self, ctx: Context) -> None:
         """Generate a bot invite link for testing purposes"""
-        await ctx.send(f"**[Click to invite me](https://discord.com/oauth2/authorize?client_id={self.bot.application_id}&permissions=8&scope=bot+applications.commands)**")
+        await ctx.send(f"**[Click to invite me to a server](https://discord.com/oauth2/authorize?client_id={self.bot.application_id}&permissions=8&scope=bot+applications.commands)**")
     
     @commands.command()
     async def sudo(
