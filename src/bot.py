@@ -8,14 +8,33 @@ For more information, please check the provided LICENSE file.
 """
 
 import os
+import sys
+
+if __name__ == "__main__":
+    from termcolors import *
+    
+    executable = os.path.split(sys.executable)[-1]
+    if executable.endswith(".exe"):
+        executable = executable[:-4]
+    
+    dirname = os.path.split(os.path.dirname(os.path.abspath(__file__)))[-1]
+    
+    print(f"{red}Please go back one directory and run:{reset}\n"
+          f"{blue}{bold}>{reset} {yellow}{executable} -m {dirname}{reset}", flush=True)
+    os._exit(1)
+
 import logging as logg
 from datetime import datetime
 
-import config
-import utils.bot 
-import utils.console
-from logger  import logging
-from classes import Bot
+from .              import config
+from .utils.bot     import get_prefix
+from .utils.console import (
+    print_terminal_size,
+    print_versions
+)
+from .logger        import logging
+from .classes       import Bot
+from .termcolors    import *
 
 import discord
 from dotenv import load_dotenv
@@ -37,19 +56,19 @@ if config.DEBUG:
     logging.debug("Houston, we have a code GRAY (DEBUG)")
     logging.debug("debug mode enabled")
 
-utils.console.print_versions()
+print_versions()
 
 load_dotenv()
 logging.info("loaded environment variables")
 
 bot = Bot(
-    command_prefix = utils.bot.get_prefix,
+    command_prefix = get_prefix,
     strip_after_prefix = True,
     status = discord.Status.idle,
     activity = discord.Activity(type=discord.ActivityType.watching, name="the world burn")
 )
 
-utils.console.print_terminal_size()
+print_terminal_size()
 
 def start(*args, **kwargs):
     """Start the bot"""
@@ -65,7 +84,3 @@ def start(*args, **kwargs):
         bot.run(token, *args, **kwargs)
     else:
         logging.critical("environment variable 'TOKEN' not found. are you sure you have setup your `.env` file correctly?")
-
-if __name__ == "__main__":
-    start()
-    logging.critical("bot process exited")

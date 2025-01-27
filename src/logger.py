@@ -34,14 +34,15 @@ import traceback
 from datetime import datetime
 from typing import Callable, Any, Literal
 
-from config import(
+from .config     import(
     BOT_NAME,
     SAVE_CUSTOM_LOGS,
     LOGGER_TIME_FORMAT,
+    LOGGER_FLUSH_ON_PRINT,
     LOG_FILE_NAME_TIME_FORMAT
 )
-from termcolors import *
-from termcolors import bg_rgb
+from .termcolors import *
+from .termcolors import bg_rgb
 
 __all__ = (
     "Logger",
@@ -103,12 +104,11 @@ class Logger:
         timestamp_color: str = bold + black,
         message_color: str = "",
         time_format: str = LOGGER_TIME_FORMAT,
+        flush_on_print: bool = LOGGER_FLUSH_ON_PRINT,
         log_file_name_time_format: str = LOG_FILE_NAME_TIME_FORMAT,
         log_types_text: dict[str, dict[str, str]] = LOG_TYPES_TEXT
     ) -> None:
-        """
-        Initialize the Logger instance with the specified configuration options.
-        """
+        """Initialize the Logger instance with the specified configuration options."""
         self.name = str(name)
         self.logs_folder = logs_folder
         self.log_file = self._get_log_file_path(logs_folder, log_file_name_time_format) if logs_folder else None
@@ -119,8 +119,10 @@ class Logger:
         self.timestamp_color = timestamp_color
         self.message_color = message_color
         self.time_format = time_format
+        self.flush_on_print = flush_on_print
         self.log_file_name_time_format = log_file_name_time_format
         self.log_types_text = log_types_text
+        self._log_file_object = None # To hold the file object
     
     def _get_log_file_path(self, logs_folder: str, log_file_name_time_format: str) -> str:
         """
@@ -171,8 +173,12 @@ class Logger:
         if do_save and self.log_file and log_level <= self.log_file_log_level:
             prefix = str(self.prefix(log_type, color=False))  # pyright: ignore[reportCallIssue, reportArgumentType]
             if self.logs_folder: os.makedirs(self.logs_folder, exist_ok=True)
-            with open(self.log_file, "a", encoding="utf-8") as f:
-                f.write(prefix + str(message) + "\n")
+            # Open the file only once when logging starts and store the file object
+            if self._log_file_object is None:
+                self._log_file_object = open(self.log_file, "a", encoding="utf-8")
+            self._log_file_object.write(prefix + str(message) + "\n") # Use the stored file object
+            if self.flush_on_print:
+                self._log_file_object.flush()
     
     def _get_log_level(
         self,
@@ -366,5 +372,12 @@ class Logger:
         if color:
             return f"{reset}{self.timestamp_color}{datetime.now().strftime(self.time_format)}{reset} {self.log_types_text['color'].get(log_type, '')}{reset} {self.name_color}{self.name}{reset} {self.message_color}"
         return f"{datetime.now().strftime(self.time_format)} {self.log_types_text['text'].get(log_type, '')} {self.name} > "
+    
+    def close(self) -> None:
+        """Flushes any buffered data and closes the log file if it's open."""
+        if self._log_file_object:
+            self._log_file_object.flush() # Flush the buffer
+            self._log_file_object.close() # Close the file
+            self._log_file_object = None # Reset the file object
 
 logging = Logger()

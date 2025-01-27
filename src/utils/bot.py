@@ -1,10 +1,10 @@
 """
 Bot-related utilities.
 """
+from typing import Optional
 
-import config
-from typing  import Optional
-from classes import Bot, BasicPrefix
+from ..        import config
+from ..classes import Bot, BasicPrefix
 
 import aiohttp
 import discord

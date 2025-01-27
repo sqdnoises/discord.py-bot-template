@@ -1,9 +1,9 @@
 import traceback
 
-import utils
-import config
-from logger  import logging
-from classes import Bot, Cog, Context
+from ..        import utils
+from ..        import config
+from ..logger  import logging
+from ..classes import Bot, Cog, Context
 
 import aiohttp
 import requests

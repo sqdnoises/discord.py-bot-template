@@ -5,7 +5,7 @@ from typing import (
 )
 
 if TYPE_CHECKING:
-    from classes.bot import Bot
+    from .bot import Bot
 
 from discord.ext import commands
 

@@ -4,7 +4,7 @@
 
 # Explanation of how to set values
 # Text            -> "something" (must be under single or double quotes)
-# Numbers         -> 1234, 12.34
+# Numbers         -> 1234, 12.34 (can also be negative)
 # True/False      -> True, False (for on/off scenarios)
 # List of text    -> ["A", "BC"] (must be under square brackets and comma separated)
 # List of numbers -> [1, 2, 3.4] (must be under square brackets and comma separated)
@@ -14,9 +14,10 @@
 # Explanations of all the values #
 ##################################
 
-# BOT_NAME               - The bot name, only used to show in logs
-BOT_NAME = "template bot"                     # Only shown in logs
-DATABASE_LOCATION = "./database/database.db"  # Only shown in logs
+# BOT_NAME               - The bot name, only used to show in logs.
+# DATABASE_LOCATION      - The location of the database file, only used to show in logs.
+BOT_NAME = "template bot"
+DATABASE_LOCATION = "./database/database.db"
 
 # DEFAULT_PREFIX         - This can be the default prefix the bot will assign to a server when it
 #                          detects its in a new server.
@@ -33,18 +34,21 @@ MENTION_IS_ALSO_PREFIX = True
 ADMINS = [1077982815070728223]
 DEBUG = True
 
-# SAVE_CUSTOM_LOGS  - Whether to save the logs produced by the custom logger
-# SAVE_DISCORD_LOGS - Whether to save the logs produced by the discord.py logger
-# Save path: ./logs/<bot name> <date & time>.log
-SAVE_CUSTOM_LOGS = True
-SAVE_DISCORD_LOGS = True
-
 # NOTIFY_ALL_ERRORS_TO_USER - Whether to send an embed to the user with an error for all kinds of
 #                             unhandled errors when an app command fails.
 #                             (slash commands, context menu, buttons, etc.)
 # LOG_CHANNEL               - A channel ID which the bot has access to so it can send bot logs.
+# NOTE: LOG_CHANNEL can be set to None to disable it.
 LOG_CHANNEL = 1318631693929680896
 NOTIFY_ALL_ERRORS_TO_USER = True
+
+# SAVE_CUSTOM_LOGS      - Whether to save the logs produced by the custom logger.
+# SAVE_DISCORD_LOGS     - Whether to save the logs produced by the discord.py logger.
+# LOGGER_FLUSH_ON_PRINT - Save file contents as logger prints. 
+# Save path: ./logs/<bot name> <time>.log
+SAVE_CUSTOM_LOGS = True
+SAVE_DISCORD_LOGS = True
+LOGGER_FLUSH_ON_PRINT = False
 
 # LOG_COMMANDS_TO_CONSOLE           - Log every text and slash command being used by a user to
 #                                     console.

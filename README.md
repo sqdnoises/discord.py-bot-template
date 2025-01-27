@@ -14,11 +14,41 @@ This source code is licensed under the **MIT License**.
 
 </div>
 
-## Setup
-**Python 3.10+** should work for this bot. However it is recommended to use any **Python 3.12** version.
+## Setup dev environment
+This template was created, developed and meant to be used with the [**Visual Studio Code**](https://code.visualstudio.com/) IDE. I have listed the recommended extensions for this template to be used with Visual Studio Code below.
+
+**Python 3.10+** should work for this bot. However it is recommended to use the latest **Python 3.13** version.
 
 > [!NOTE]
 > In this section, `python3` would be `python` or just `py` on **Windows** platform.
+
+### recommended Visual Studio Code extensions for this template
+- autoDocstring (by Nils Werner)
+- Better Color Picker (by Jannchie)
+- Error lens (by Alexander)
+- Local History (by xyz)
+- Prisma (by Prisma)
+- Pylance (by Microsoft)
+- Python (by Microsoft)
+- Python Debugger (by Microsoft)
+- Python Environments (by Microsoft)
+- Python Indent (by Kevin Rose)
+- SQLite3 Editor (by yy0931)
+
+#### other extensions I use
+- :emojisense: (by Matt Bierner)
+- AmazonQ (by Amazon Web Services)
+- Even Better TOML (by tamasfe)
+- Hex Editor (by Microsoft)
+- Live Share (by Microsoft)
+- Rainbow CSV (by mechatroner)
+- Remote - SSH (by Microsoft)
+
+#### customization
+- Discord Rich Presence (by leonardssh)
+- Material Icon Theme (by Philipp Kief)
+- One Dark Pro (by binaryify) (I use this rarely)
+- Vitesse Theme (Anthony Fu) (I use this one the most)
 
 ### clone repo
 First of all, git clone this repository:
@@ -74,7 +104,6 @@ pip install -r requirements.txt
 
 ### setup the database
 ```bash
-cd src
 prisma db push
 ```
 
@@ -89,7 +118,6 @@ source .venv/bin/activate  # For Linux
 # OR
 & .\.venv\Scripts\activate  # For Windows (optional)
 
-cd src
 python3 bot.py  # py or python bot.py on Windows
 ```
 

@@ -16,7 +16,10 @@ from typing    import (
 )
 from itertools import islice
 
+from discord.utils import copy_doc
+
 __all__ = (
+    "copy_doc",
     "format_number",
     "list_modules",
     "mprint",
@@ -36,6 +39,9 @@ __all__ = (
 )
 
 T = TypeVar("T")
+
+# copy_doc is a decorator that copies the docstring of a function to the decorated function
+# it has been imported from discord.utils and listed in __all__
 
 def format_number(number: int, decimal_points: int = 0, *, pad_decimal: bool = False) -> str:
     """

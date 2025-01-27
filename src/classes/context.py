@@ -4,10 +4,10 @@ from typing import (
 )
 from datetime import datetime
 
-import utils
+from .. import utils
 
 if TYPE_CHECKING:
-    from bot import Bot
+    from .bot import Bot
 
 import discord
 from discord.ext   import commands
@@ -78,11 +78,11 @@ class Context(commands.Context):
     ) -> discord.Embed:
         """Return a discord.Embed"""
         return discord.Embed(
-            title=title,
-            description=description,
-            url=url,
-            color=discord.Color.dark_embed(), # dark gray embed background
-            timestamp=timestamp
+            title = title,
+            description = description,
+            url = url,
+            color = discord.Color.dark_embed(), # dark gray embed background
+            timestamp = timestamp
         )
     
     async def yes(self)          -> None: await self.react("✅")
