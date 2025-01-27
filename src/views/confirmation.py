@@ -5,19 +5,19 @@ __all__ = (
 )
 
 class ConfirmationView(discord.ui.View):
-    def __init__(self, interaction: discord.Interaction, timeout: int = 30):
+    def __init__(self, interaction: discord.Interaction, timeout: int = 30) -> None:
         super().__init__(timeout=timeout)
         self.interaction = interaction
         self.user = interaction.user
         self.value = None
 
     @discord.ui.button(label="Yes", style=discord.ButtonStyle.green)
-    async def yes(self, interaction: discord.Interaction, button: discord.ui.Button):
+    async def yes(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         self.value = True
         self.stop()
 
     @discord.ui.button(label="No", style=discord.ButtonStyle.red)
-    async def no(self, interaction: discord.Interaction, button: discord.ui.Button):
+    async def no(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         self.value = False
         self.stop()
     

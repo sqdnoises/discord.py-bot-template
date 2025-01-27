@@ -2,7 +2,7 @@ import sys
 import pkg_resources
 from typing   import (
     TYPE_CHECKING,
-    Literal
+    Literal, Optional
 )
 from datetime import datetime
 
@@ -37,8 +37,8 @@ class Bot(commands.Bot):
     tree: CommandTree
     uptime: datetime | None
     prisma: Prisma
-    log_channel: discord.TextChannel | None
-    log_channel_id: int
+    log_channel: Optional[discord.TextChannel]
+    log_channel_id: Optional[int]
     all_app_commands: dict[str, app_commands.AppCommand]
     
     def __init__(
@@ -66,22 +66,29 @@ class Bot(commands.Bot):
         self.log_channel = None
     
     async def connect_db(self) -> None:
+        if self.prisma.is_connected():
+            logging.warn("tried to connect to database while already connected")
+            return
+        
         await self.prisma.connect()
+        logging.info(f"connected to database {config.DATABASE_LOCATION}")
     
     async def disconnect_db(self) -> None:
+        if not self.prisma.is_connected():
+            logging.warn("tried to disconnect from database while already disconnected")
+            return
+        
         await self.prisma.disconnect()
+        logging.info("disconnected from database")
     
-    async def setup_hook(self) -> None:
-        self.uptime = discord.utils.utcnow()
-        
-        mprint()
-        mprint(f"{white}~{reset} {bold}{green}{config.BOT_NAME.upper()}{reset} {white}~{reset}")
-        mprint(f"{bright_green}running on{reset} {yellow}python{reset} {blue}{sys.version.split()[0]}{reset}; {yellow}discord.py{reset} {blue}{pkg_resources.get_distribution('discord.py').version}{reset}")
-        mprint()
-        
-        await self.connect_db()
-        logging.info("connected to database ./database/database.db")
-        
+    async def enable_wal_mode(self) -> None:
+        try:
+            await self.prisma.execute_raw("PRAGMA journal_mode=WAL;")
+            print("SQLite journal mode set to WAL.")
+        except Exception as e:
+            print(f"Error setting WAL mode: {e}")
+    
+    async def _load_all_cogs(self) -> None:
         loaded = []
         excluded = []
         
@@ -121,16 +128,12 @@ class Bot(commands.Bot):
         logging.info(excluded_str.strip())
         
         logging.info(f"commands loaded: {len(self.commands)}")
-        
-        if TYPE_CHECKING and self.user is None:
-            return  # to satisfy the type checker
-        
-        await self.update_app_commands()
-        logging.info(f"app commands loaded: {len(self.all_app_commands)}")
-        
-        logging.info("logged in successfully")
-        logging.info(f"user: {self.user} ({self.user.id})")
-        logging.info(f"invite: https://discord.com/oauth2/authorize?client_id={self.user.id}&permissions=8&scope=bot+applications.commands")
+    
+    async def _setup_log_channel(self) -> None:
+        if self.log_channel_id is None:
+            logging.warn("log channel not set because log channel id was not set")
+            self.log_channel = None
+            return
         
         logging.info(f"getting log channel with id {self.log_channel_id}")
         channel = await self.fetch_channel(self.log_channel_id)
@@ -144,6 +147,29 @@ class Bot(commands.Bot):
             logging.critical(f"log channel with id {self.log_channel_id} not found. this can cause problems.")
         else:
             logging.info(f"log channel: #{self.log_channel.name} (id: {self.log_channel.id})")
+    
+    async def setup_hook(self) -> None:
+        self.uptime = discord.utils.utcnow()
+        
+        mprint()
+        mprint(f"{white}~{reset} {bold}{green}{config.BOT_NAME.upper()}{reset} {white}~{reset}")
+        mprint(f"{bright_green}running on{reset} {yellow}python{reset} {blue}{sys.version.split()[0]}{reset}; {yellow}discord.py{reset} {blue}{pkg_resources.get_distribution('discord.py').version}{reset}")
+        mprint()
+        
+        await self.connect_db()
+        await self._load_all_cogs()
+        
+        if TYPE_CHECKING and self.user is None:
+            return  # to satisfy the type checker
+        
+        await self.update_app_commands()
+        logging.info(f"app commands loaded: {len(self.all_app_commands)}")
+        
+        logging.info("logged in successfully")
+        logging.info(f"user: {self.user} ({self.user.id})")
+        logging.info(f"invite: https://discord.com/oauth2/authorize?client_id={self.user.id}&permissions=8&scope=bot+applications.commands")
+        
+        await self._setup_log_channel()
         
         if TYPE_CHECKING and (
             self.log_channel is None
