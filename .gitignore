@@ -31,8 +31,8 @@ venv/
 logs/
 *.log
 
-# vscode settings
-.vscode/
+# vscode settings - uncomment if required
+# .vscode/
 
 # local history
 .history/
