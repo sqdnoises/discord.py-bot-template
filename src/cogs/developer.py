@@ -34,7 +34,7 @@ class Developer(Cog):
     async def cog_check(self, ctx: Context) -> bool:
         return checks.is_admin(ctx)
     
-    @commands.command(aliases=["load_extension"])
+    @commands.command(aliases=["load-extension"])
     async def load(self, ctx: Context, cog: str) -> None:
         """Load a cog"""
         ext = "cogs."+cog
@@ -43,7 +43,7 @@ class Developer(Cog):
         await ctx.send(f"✅ Loaded the extension: `{ext}`")
         logging.info(f"successfully loaded `{ext}`")
     
-    @commands.command(aliases=["unload_extension"])
+    @commands.command(aliases=["unload-extension"])
     async def unload(self, ctx: Context, cog: str) -> None:
         """Unload a cog"""
         ext = "cogs."+cog
@@ -52,7 +52,7 @@ class Developer(Cog):
         await ctx.send(f"✅ Unloaded the extension: `{ext}`")
         logging.info(f"successfully unloaded `{ext}`")
     
-    @commands.command(aliases=["r", "re", "reload_all", "reload_extension", "reload_all_extensions"])
+    @commands.command(aliases=["r", "re", "reload-all", "reload-extension", "reload-all-extensions"])
     async def reload(self, ctx: Context, *cogs: str) -> None:
         """Reload an or all cogs"""
         if len(cogs) == 0:
@@ -84,7 +84,7 @@ class Developer(Cog):
         
         await msg.edit(content=ext_status)
     
-    @commands.command(aliases=["exts", "loaded", "loaded_extensions"])
+    @commands.command(aliases=["exts", "loaded", "loaded-extensions"])
     async def extensions(self, ctx: Context) -> None:
         """List all loaded cogs"""
         paginated_list = utils.paginate([f"`{k}`" for k in self.bot.extensions.keys()])
@@ -128,7 +128,8 @@ class Developer(Cog):
         if self.bot.log_channel is not None:
             logging.warning("informing logs channel")
             try:
-                await self.bot.log_channel.send(f"{ctx.author.mention} **{ctx.author.display_name}** *(@{ctx.author}, id: {ctx.author.id})* wants to restart the bot")
+                await self.bot.log_channel.send(f"**{ctx.author.display_name}** wants to restart the bot\n"
+                                                f"-# {ctx.author.name} ({ctx.author.id})")
                 await self.bot.log_channel.send("restarting...")
             except Exception as e:
                 logging.error("couldn't inform logs channel, ignoring and restarting", exc_info=e)
@@ -156,7 +157,8 @@ class Developer(Cog):
         if self.bot.log_channel is not None:
             logging.warning("informing logs channel")
             try:
-                await self.bot.log_channel.send(f"{ctx.author.mention} **{ctx.author.display_name}** *(@{ctx.author}, id: {ctx.author.id})* wants to shutdown the bot")
+                await self.bot.log_channel.send(f"**{ctx.author.display_name}** wants to shutdown the bot\n"
+                                                f"-# {ctx.author.name} ({ctx.author.id})")
                 await self.bot.log_channel.send("shutting down...")
             except Exception as e:
                 logging.error("couldn't inform logs channel, ignoring and shutting down", exc_info=e)
