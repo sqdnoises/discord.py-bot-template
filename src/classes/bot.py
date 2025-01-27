@@ -1,4 +1,5 @@
 import sys
+import logging       as logg
 import pkg_resources
 from typing   import (
     TYPE_CHECKING,
@@ -6,18 +7,19 @@ from typing   import (
 )
 from datetime import datetime
 
-import cogs
-import utils
-import config
-from utils               import mprint
-from logger              import logging
-from termcolors          import *
-from termcolors          import rgb
-from classes.context     import Context
-from classes.commandtree import CommandTree
+from ..           import cogs
+from ..           import utils
+from ..           import config
+from ..utils      import mprint
+from ..logger     import logging
+from ..termcolors import *
+from ..termcolors import rgb
+
+from .context      import Context
+from .command_tree import CommandTree
 
 if TYPE_CHECKING:
-    from classes.custom_types import (
+    from .custom_types import (
         ContextT_co,
         PrefixType
     )
@@ -33,7 +35,6 @@ __all__ = (
 )
 
 class Bot(commands.Bot):
-    """The main bot class which handles everything, including handling of events, commands, interactions, cogs, extensions, etc. and the bot itself."""
     tree: CommandTree
     uptime: datetime | None
     prisma: Prisma
@@ -84,7 +85,7 @@ class Bot(commands.Bot):
     async def enable_wal_mode(self) -> None:
         try:
             await self.prisma.execute_raw("PRAGMA journal_mode=WAL;")
-            print("SQLite journal mode set to WAL.")
+            print("SQLite3 journal mode set to WAL.")
         except Exception as e:
             print(f"Error setting WAL mode: {e}")
     
@@ -162,7 +163,7 @@ class Bot(commands.Bot):
         if TYPE_CHECKING and self.user is None:
             return  # to satisfy the type checker
         
-        await self.update_app_commands()
+        await self.tree.update_app_commands()
         logging.info(f"app commands loaded: {len(self.all_app_commands)}")
         
         logging.info("logged in successfully")
@@ -183,24 +184,31 @@ class Bot(commands.Bot):
         except Exception as e:
             logging.critical(f"could not send log message to log channel with id {self.log_channel_id} due to exception:", exc_info=e)
     
-    async def update_app_commands(self) -> None:
-        """Update app commands"""
-        logging.debug("fetching app commands...")
-        self.all_app_commands = {
-            cmd.name: cmd
-            for cmd in await self.tree.fetch_commands()
-        }
-        logging.debug(f"app commands fetched ({len(self.all_app_commands)})")
+    async def close(self, *, abandon: bool = False) -> None:
+        """Disconnect from the database, close the bot, flush stdout & stderr and shutdown loggers"""
+        # Disconnect from the database
+        await self.disconnect_db()
+        
+        # Close the bot
+        await super().close()
+        
+        # Flush stdout & stderr
+        sys.stdout.flush()
+        sys.stderr.flush()
+        
+        # Shutdown loggers
+        logging.critical("bot process exited" if not abandon else "bot process exited (abandoned)")
+        logg.shutdown()
+        logging.close()
+        
+        if abandon:
+            print()
     
-    def slash_mention(self, command: str) -> str:
+    def slash_mention(self, qualified_command_name: str) -> str:
         """Mention an application command like a normal user or channel mention"""
-        if command.startswith("/"):
-            command = command[1:]
-        parent = command.split(maxsplit=1)[0]
-        return f"</{command}:{self.all_app_commands[parent].id}>" if self.all_app_commands.get(parent) else f"`/{command}`"
+        return self.tree.slash_mention(qualified_command_name)
     
     async def get_context(self, message: discord.Message, *, cls: type["ContextT_co"] = Context) -> "ContextT_co":
-        """Get Context from a discord.Message"""
         return await super().get_context(message, cls=cls)
     
     @staticmethod

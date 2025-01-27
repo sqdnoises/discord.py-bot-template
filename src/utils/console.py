@@ -5,7 +5,8 @@ Console-related utilities.
 import os
 import sys
 import pkg_resources
-from logger import logging
+
+from ..logger import logging
 
 __all__ = (
     "print_versions",

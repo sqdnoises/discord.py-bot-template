@@ -1,4 +1,4 @@
-from classes import Bot, Cog, Context
+from ..classes import Bot, Cog, Context
 
 import discord
 from discord import app_commands

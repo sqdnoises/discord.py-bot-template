@@ -4,9 +4,9 @@ from typing import(
     Literal, Iterable
 )
 
-import utils
-from classes         import Bot, Cog
-from views.utilities import InstallView
+from ..                import utils
+from ..classes         import Bot, Cog
+from ..views.utilities import InstallView
 
 import psutil
 from ping3 import ping

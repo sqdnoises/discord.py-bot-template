@@ -12,11 +12,11 @@ import pkg_resources
 from typing     import TYPE_CHECKING, Literal, Optional
 from contextlib import redirect_stdout, redirect_stderr
 
-import utils
-import checks
-import config
-from logger  import logging
-from classes import Bot, Cog, Context
+from ..        import utils
+from ..        import checks
+from ..        import config
+from ..logger  import logging
+from ..classes import Bot, Cog, Context
 
 import discord
 from discord     import app_commands
@@ -119,49 +119,43 @@ class Developer(Cog):
     @commands.command()
     async def restart(self, ctx: Context) -> None:
         """Restart the bot"""
-        if self.bot.log_channel is None:
-            logging.warning("log_channel is not set, restarting without informing logs channel...")
-            await ctx.send("⚠️ **Warning**: `log_channel` is not set, restarting without informing logs channel...")
-        
-        logging.warning(f"{ctx.author.display_name} (@{ctx.author}, id: {ctx.author.id}) wants to restart the bot")
+        logging.warning(f"{ctx.author.display_name} (@{ctx.author}, id: {ctx.author.id}) is restarting the bot")
         
         if self.bot.log_channel is not None:
             logging.warning("informing logs channel")
             try:
-                await self.bot.log_channel.send(f"**{ctx.author.display_name}** wants to restart the bot\n"
+                await self.bot.log_channel.send(f"**{ctx.author.display_name}** is restarting the bot\n"
                                                 f"-# {ctx.author.name} ({ctx.author.id})")
-                await self.bot.log_channel.send("restarting...")
             except Exception as e:
                 logging.error("couldn't inform logs channel, ignoring and restarting", exc_info=e)
+        else:
+            logging.warning("log_channel is not set, restarting without informing logs channel...")
         
         try:
             await ctx.react("🫠")
         except Exception as e:
             logging.error("couldn't react to message, ignoring and restarting", exc_info=e)
         
-        logging.warning("replacing current process with a new one")
-        logging.warning(f"running `{' '.join([sys.executable] + sys.argv)}` in os.execv()")
-        logging.critical("abandoned")
-        print()
+        logging.warning("closing bot and replacing current process with a new one by running:\n"
+                        f"`{' '.join([sys.executable] + sys.argv)}` in os.execv()")
+        await self.bot.close()
         os.execv(sys.executable, ["python"] + sys.argv)
     
     @commands.command()
     async def shutdown(self, ctx: Context) -> None:
         """Shutdown the bot"""
-        if self.bot.log_channel is None:
-            logging.warning("log_channel is not set, restarting without informing logs channel...")
-            await ctx.send("⚠️ **Warning**: `log_channel` is not set, restarting without informing logs channel...")
-        
-        logging.warning(f"{ctx.author.display_name} (@{ctx.author}, id: {ctx.author.id}) wants to shutdown the bot")
+        logging.warning(f"{ctx.author.display_name} (@{ctx.author}, id: {ctx.author.id}) is shutting down the bot")
         
         if self.bot.log_channel is not None:
             logging.warning("informing logs channel")
             try:
-                await self.bot.log_channel.send(f"**{ctx.author.display_name}** wants to shutdown the bot\n"
+                await self.bot.log_channel.send(f"**{ctx.author.display_name}** is shutting down the bot\n"
                                                 f"-# {ctx.author.name} ({ctx.author.id})")
-                await self.bot.log_channel.send("shutting down...")
             except Exception as e:
                 logging.error("couldn't inform logs channel, ignoring and shutting down", exc_info=e)
+        
+        else:
+            logging.warning("log_channel is not set, shutting down without informing logs channel...")
         
         try:
             await ctx.react("🫀")
@@ -169,7 +163,6 @@ class Developer(Cog):
             logging.error("couldn't react to message, ignoring and shutting down", exc_info=e)
         
         logging.warning("shutting down")
-        logging.warning("closing bot using await bot.close()")
         await self.bot.close()
     
     @commands.command(name="generate-invite", aliases=["invite"])
@@ -199,60 +192,6 @@ class Developer(Cog):
         msg.content = ctx.prefix + command
         new_ctx = await self.bot.get_context(msg, cls=type(ctx))
         await self.bot.invoke(new_ctx)
-
-    @commands.command()
-    async def do(
-        self,
-        ctx: Context,
-        times: int,
-        channel: Optional[discord.TextChannel],
-        who: Optional[discord.Member | discord.User],
-        *,
-        command: str
-    ) -> None:
-        """Repeats a command a specified number of times optionally as another person optionally in another channel"""
-        
-        if TYPE_CHECKING and ctx.prefix is None:
-            # to satisfy the typechecker
-            return
-        
-        msg = copy.copy(ctx.message)
-        new_channel = channel or ctx.channel
-        msg.channel = new_channel
-        msg.author = who or ctx.author
-        msg.content = ctx.prefix + command
-        
-        new_ctx = await self.bot.get_context(msg, cls=type(ctx))
-        
-        for i in range(times):
-            await new_ctx.reinvoke()
-    
-    @commands.command(name="add-clyde", aliases=["addclyde", "add_clyde"])
-    @commands.bot_has_guild_permissions(ban_members=True)
-    async def add_clyde(self, ctx: Context) -> None:
-        """Add Clyde to the current Discord server"""
-        
-        if TYPE_CHECKING and ctx.guild is None:
-            # to satisfy the typechecker
-            return
-        
-        clyde = discord.Object(1081004946872352958)
-        await ctx.guild.ban(clyde)
-        await ctx.guild.unban(clyde)
-        await ctx.success()
-    
-    @commands.command(name="remove-clyde", aliases=["removeclyde", "remove_clyde"])
-    @commands.bot_has_guild_permissions(ban_members=True)
-    async def remove_clyde(self, ctx: Context) -> None:
-        """Remove Clyde from the current Discord server"""
-        
-        if TYPE_CHECKING and ctx.guild is None:
-            # to satisfy the typechecker
-            return
-        
-        clyde = discord.Object(1081004946872352958)
-        await ctx.guild.ban(clyde)
-        await ctx.success()
     
     @commands.command(name="exec", aliases=["eval", "run"])
     async def _exec(self, ctx: Context, *, code: str) -> None:
@@ -527,7 +466,6 @@ class Developer(Cog):
             else:
                 synced = await ctx.bot.tree.sync()
             
-            await self.bot.update_app_commands()
             await ctx.send(f"Synced {len(synced)} commands{' globally' if spec is None else ' to the current guild'}.")
             return
         
@@ -540,7 +478,6 @@ class Developer(Cog):
             else:
                 ret += 1
         
-        await self.bot.update_app_commands()
         await ctx.send(f"Synced the tree to {ret}/{len(guilds)}.")
 
 async def setup(bot: Bot) -> None:

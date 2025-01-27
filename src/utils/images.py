@@ -5,7 +5,7 @@ Image-related utilities.
 from io     import BytesIO
 from typing import TYPE_CHECKING, Optional
 
-import utils.bot
+from .bot import get_raw_content_data
 
 import aiohttp
 import numpy as np
@@ -31,7 +31,7 @@ async def fetch_image(image_url: str, *args, session: Optional[aiohttp.ClientSes
         PILImage: The image object.
     """
     
-    image_data = await utils.bot.get_raw_content_data(image_url, *args, session=session, **kwargs)
+    image_data = await get_raw_content_data(image_url, *args, session=session, **kwargs)
     return Image.open(BytesIO(image_data)).convert("RGBA")
 
 def get_dominant_color(image: Image.Image) -> tuple[int, int, int]:

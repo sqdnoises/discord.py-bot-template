@@ -1,13 +1,13 @@
 from typing import (
-    Any, Iterable,
+    Iterable,
     Callable, Awaitable,
     TypeVar, ParamSpec
 )
 
-from classes.bot         import Bot
-from classes.cog         import Cog
-from classes.context     import Context
-from classes.commandtree import CommandTree
+from .bot          import Bot
+from .cog          import Cog
+from .context      import Context
+from .command_tree import CommandTree
 
 from discord import Message
 
