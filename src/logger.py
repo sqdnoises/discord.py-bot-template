@@ -27,6 +27,10 @@ Usage:
     - 3: Error
     - 4: Critical
     - 5: Debug
+
+Copyright (c) 2023-present SqdNoises
+Licensed under the MIT License
+For more information, please check the provided LICENSE file.
 """
 
 import os
