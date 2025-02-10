@@ -215,22 +215,3 @@ class Bot(commands.Bot):
     async def get_context_from_interaction(interaction: discord.Interaction, *, cls: type["ContextT_co"] = Context) -> "ContextT_co":
         """Get Context from a discord.Interaction"""
         return await cls.from_interaction(interaction)
-    
-    def create_activity(
-        self,
-        name: str,
-        type: Literal["playing", "streaming", "listening", "watching"] = "playing",
-        *args,
-        **kwargs
-    ) -> discord.Activity | discord.Game | discord.Streaming:
-        """Create an activity for a given type"""
-
-        match type:
-            case "playing":
-                return discord.Game(name=name, *args, **kwargs)
-            case "streaming":
-                return discord.Streaming(name=name, *args, **kwargs)
-            case "listening":
-                return discord.Activity(type=discord.ActivityType.listening, name=name, *args, **kwargs)
-            case "watching":
-                return discord.Activity(type=discord.ActivityType.watching, name=name, *args, **kwargs)
