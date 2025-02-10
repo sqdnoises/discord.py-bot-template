@@ -14,8 +14,7 @@ from typing     import (
     Literal, Optional
 )
 from contextlib import (
-    redirect_stdout,
-    redirect_stderr
+    redirect_stdout, redirect_stderr
 )
 
 from ..        import utils
