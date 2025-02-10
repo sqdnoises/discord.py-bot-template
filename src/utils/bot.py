@@ -1,6 +1,7 @@
 """
 Bot-related utilities.
 """
+
 from typing import Optional
 
 from ..        import config
