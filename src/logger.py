@@ -38,7 +38,7 @@ import traceback
 from datetime import datetime
 from typing import Callable, Any, Literal
 
-from .config     import(
+from .config     import (
     BOT_NAME,
     SAVE_CUSTOM_LOGS,
     LOGGER_TIME_FORMAT,
