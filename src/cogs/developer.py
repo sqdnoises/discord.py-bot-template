@@ -9,8 +9,14 @@ import asyncio
 import datetime
 import textwrap
 import pkg_resources
-from typing     import TYPE_CHECKING, Literal, Optional
-from contextlib import redirect_stdout, redirect_stderr
+from typing     import (
+    TYPE_CHECKING,
+    Literal, Optional
+)
+from contextlib import (
+    redirect_stdout,
+    redirect_stderr
+)
 
 from ..        import utils
 from ..        import checks
