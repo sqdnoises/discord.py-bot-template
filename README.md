@@ -118,7 +118,7 @@ source .venv/bin/activate  # For Linux
 # OR
 & .\.venv\Scripts\activate  # For Windows (optional)
 
-python3 bot.py  # py or python bot.py on Windows
+python3 -m src  # py/python -m src on Windows
 ```
 
 ### post-run
