@@ -3,7 +3,9 @@ Image-related utilities.
 """
 
 from io     import BytesIO
-from typing import TYPE_CHECKING, Optional
+from typing import (
+    TYPE_CHECKING, Optional
+)
 
 from .bot import get_raw_content_data
 
