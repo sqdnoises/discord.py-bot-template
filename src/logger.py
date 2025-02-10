@@ -54,18 +54,18 @@ __all__ = (
 
 LOG_TYPES_TEXT = {
     "text": {
-        "info": "INFO    ",
-        "warning": "WARNING ",
-        "error": "ERROR   ",
+        "info":     "INFO    ",
+        "warning":  "WARNING ",
+        "error":    "ERROR   ",
         "critical": "CRITICAL",
-        "debug": "DEBUG   "
+        "debug":    "DEBUG   "
     },
     "color": {
-        "info": bold + blue + "INFO    ",
-        "warning": bold + yellow + "WARNING ",
-        "error": bold + red + "ERROR   ",
-        "critical": bg_rgb(200, 0, 0) + white + "CRITICAL",
-        "debug": bold + bg_black + "DEBUG   "
+        "info":     bold              + blue     + "INFO    ",
+        "warning":  bold              + yellow   + "WARNING ",
+        "error":    bold              + red      + "ERROR   ",
+        "critical": bg_rgb(200, 0, 0) + white    + "CRITICAL",
+        "debug":    bold              + bg_black + "DEBUG   "
     }
 }
 
