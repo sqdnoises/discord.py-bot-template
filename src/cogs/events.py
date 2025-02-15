@@ -22,12 +22,12 @@ class Events(Cog):
         self.bot.tree.on_error = self.on_app_command_error
         self.activity_loop.start()
     
-    @tasks.loop(minutes=15)
+    @tasks.loop(minutes=5)
     async def activity_loop(self) -> None:
         await self.bot.change_presence(
-            activity = self.bot.create_activity(
+            activity = discord.Activity(
                 name = f"over {len(self.bot.users)} users",
-                type = "watching"
+                type = discord.ActivityType.watching
             ),
             status = discord.Status.online
         )
