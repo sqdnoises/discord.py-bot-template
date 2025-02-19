@@ -258,7 +258,7 @@ class Developer(Cog):
                     t = round(t, 2) # if in seconds then round to 2 decimal places
                     time_text = f"{t}s"
                 
-                try: await ctx.failure()
+                try: await ctx.failed()
                 except: pass
                 
                 embed = discord.Embed(
@@ -316,7 +316,7 @@ class Developer(Cog):
                     t = round(t, 2) # if in seconds then round to 2 decimal places
                     time_text = f"{t}s"
                 
-                try: await ctx.failure()
+                try: await ctx.failed()
                 except: pass
                 
                 output = stdout.getvalue()
