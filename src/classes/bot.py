@@ -2,8 +2,7 @@ import sys
 import logging       as logg
 import pkg_resources
 from typing   import (
-    TYPE_CHECKING,
-    Literal, Optional
+    TYPE_CHECKING, Optional
 )
 from datetime import datetime
 

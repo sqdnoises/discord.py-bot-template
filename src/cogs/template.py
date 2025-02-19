@@ -5,12 +5,8 @@ from discord import app_commands
 from discord.ext import commands
 
 class Example(Cog):
-    """Example cog."""
-    
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
-        self.emoji = "🥺"
-        self.short_description = "Example cog"
         
         # Define context menus by our own because discord.py doesn't support adding
         # context menus in cogs automatically to the tree yet.

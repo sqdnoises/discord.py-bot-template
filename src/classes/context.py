@@ -65,9 +65,33 @@ class Context(commands.Context):
                 view = view
             )
     
-    async def react(self, emoji: str | discord.Emoji) -> None:
-        """Add reaction to the message"""
+    async def react(self, emoji: str | discord.Emoji | discord.PartialEmoji | discord.Reaction) -> None:
+        """Add a reaction to the message"""
         await self.message.add_reaction(emoji)
+    
+    @discord.utils.copy_doc(react)
+    async def add_reaction(self, emoji: str | discord.Emoji | discord.PartialEmoji | discord.Reaction) -> None:
+        await self.react(emoji)
+    
+    async def unreact(
+        self,
+        emoji: str | discord.Emoji | discord.PartialEmoji | discord.Reaction,
+        member: Optional[discord.abc.Snowflake] = None
+    ) -> None:
+        """
+        Remove a reaction from the message
+        
+        If `member` is not provided, `member` defaults to `Context.me`.
+        """
+        await self.message.remove_reaction(emoji, self.me if member is None else member)
+    
+    @discord.utils.copy_doc(unreact)
+    async def remove_reaction(
+        self,
+        emoji: str | discord.Emoji | discord.PartialEmoji | discord.Reaction,
+        member: Optional[discord.abc.Snowflake] = None
+    ) -> None:
+        await self.unreact(emoji, member)
     
     def create_board(
         self,
@@ -76,27 +100,20 @@ class Context(commands.Context):
         url:         str      | None = None,
         timestamp:   datetime | None = None
     ) -> discord.Embed:
-        """Return a discord.Embed"""
+        """Returns a Dark-mode-flushed embed board"""
         return discord.Embed(
             title = title,
             description = description,
             url = url,
-            color = discord.Color.dark_embed(), # dark gray embed background
+            color = discord.Color.dark_embed(), # dark gray embed, matching discord's embed background
             timestamp = timestamp
         )
     
-    async def yes(self)          -> None: await self.react("✅")
-    async def done(self)         -> None: await self.react("✅")
-    async def tick(self)         -> None: await self.react("✅")
-    async def check(self)        -> None: await self.react("✅")
-    async def green(self)        -> None: await self.react("✅")
-    async def success(self)      -> None: await self.react("✅")
-    async def successful(self)   -> None: await self.react("✅")
+    async def yes(self)     -> None: await self.react("✅")
+    async def done(self)    -> None: await self.react("✅")
+    async def success(self) -> None: await self.react("✅")
     
-    async def x(self)            -> None: await self.react("❌")
-    async def no(self)           -> None: await self.react("❌")
-    async def red(self)          -> None: await self.react("❌")
-    async def fail(self)         -> None: await self.react("❌")
-    async def cross(self)        -> None: await self.react("❌")
-    async def failure(self)      -> None: await self.react("❌")
-    async def unsuccessful(self) -> None: await self.react("❌")
+    async def x(self)       -> None: await self.react("❌")
+    async def no(self)      -> None: await self.react("❌")
+    async def error(self)   -> None: await self.react("❌")
+    async def failed(self)  -> None: await self.react("❌")
