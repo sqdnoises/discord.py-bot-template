@@ -167,7 +167,7 @@ def code(text: str, language: str | None = None, ignore_whitespace: bool = False
     
     return f"```{language or ''}\n{text}\n```"
 
-def error(e: Exception, *, include_module: bool = False) -> str:
+def error(e: BaseException, *, include_module: bool = False) -> str:
     if include_module:
         classname = (e.__class__.__module__+"." if e.__class__.__module__ != "builtins" else "")+e.__class__.__name__
     else:
