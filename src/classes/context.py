@@ -16,6 +16,7 @@ from discord.utils import MISSING
 class Context(commands.Context):
     """Utility class for commands that is used to easily interact with commands."""
     bot: "Bot"
+    content: str
     voice: discord.VoiceState | None
     cleaned_up_code: str
     out: bool = True
@@ -26,6 +27,7 @@ class Context(commands.Context):
         **kwargs: Any
     ) -> None:
         super().__init__(*args, **kwargs)
+        self.content = self.message.content
         self.voice = self.author.voice if isinstance(self.author, discord.Member) else None
         self.cleaned_up_code = utils.cleanup_code(self.message.content)
     
