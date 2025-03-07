@@ -10,6 +10,8 @@ __pycache__/
 .cache
 *.cache
 .DS_Store
+temp/
+attachments/
 
 # virtual environments
 .venv/
@@ -22,8 +24,9 @@ venv/
 logs/
 *.log
 
-# vscode settings - uncomment if required
+# IDE - uncomment .vscode if required
 # .vscode/
+.idea/
 
 # local history
 .history/
