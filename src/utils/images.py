@@ -2,25 +2,23 @@
 Image-related utilities.
 """
 
-from io     import BytesIO
-from typing import (
-    TYPE_CHECKING, Optional
-)
+from io import BytesIO
+from typing import TYPE_CHECKING, Optional
 
-from .bot import get_raw_content_data
+from .internet import get_raw_content_data
 
 import aiohttp
 import numpy as np
-from PIL             import Image
-from PIL.Image       import Image as PILImage
+from PIL import Image
+from PIL.Image import Image as PILImage
 from sklearn.cluster import KMeans
 
-__all__ = (
-    "fetch_image",
-    "get_dominant_color"
-)
+__all__ = ("fetch_image", "get_dominant_color")
 
-async def fetch_image(image_url: str, *args, session: Optional[aiohttp.ClientSession] = None, **kwargs) -> PILImage:
+
+async def fetch_image(
+    image_url: str, *args, session: Optional[aiohttp.ClientSession] = None, **kwargs
+) -> PILImage:
     """
     Fetches an image from a URL asynchronously and returns a PIL Image object.
 
@@ -28,13 +26,14 @@ async def fetch_image(image_url: str, *args, session: Optional[aiohttp.ClientSes
         image_url (str): The URL of the image to fetch.
         session (Optional[aiohttp.ClientSession]): An optional aiohttp ClientSession to use for the request.
             If not provided, a new session will be created.
-        
+
     Returns:
         PILImage: The image object.
     """
-    
+
     image_data = await get_raw_content_data(image_url, *args, session=session, **kwargs)
     return Image.open(BytesIO(image_data)).convert("RGBA")
+
 
 def get_dominant_color(image: Image.Image) -> tuple[int, int, int]:
     """
@@ -52,9 +51,13 @@ def get_dominant_color(image: Image.Image) -> tuple[int, int, int]:
 
     # Mask out transparent pixels (alpha channel == 0)
     if pixels.shape[-1] == 4:  # Check if image has an alpha channel
-        non_transparent_pixels = pixels[pixels[..., 3] > 0]  # Keep non-transparent pixels
+        non_transparent_pixels = pixels[
+            pixels[..., 3] > 0
+        ]  # Keep non-transparent pixels
     else:
-        non_transparent_pixels = pixels  # Assume all pixels are non-transparent if no alpha channel
+        non_transparent_pixels = (
+            pixels  # Assume all pixels are non-transparent if no alpha channel
+        )
 
     # If there are no non-transparent pixels, return a default value (e.g., white)
     if non_transparent_pixels.shape[0] == 0:
@@ -65,7 +68,11 @@ def get_dominant_color(image: Image.Image) -> tuple[int, int, int]:
 
     # Calculate brightness for each pixel using luminance (perceptual model)
     # Luminance formula: 0.2126*R + 0.7152*G + 0.0722*B
-    brightness = 0.2126 * pixels_rgb[:, 0] + 0.7152 * pixels_rgb[:, 1] + 0.0722 * pixels_rgb[:, 2]
+    brightness = (
+        0.2126 * pixels_rgb[:, 0]
+        + 0.7152 * pixels_rgb[:, 1]
+        + 0.0722 * pixels_rgb[:, 2]
+    )
 
     # Filter to keep the top 25% brightest pixels for clustering
     threshold = np.percentile(brightness, 75)  # 75th percentile brightness
@@ -82,6 +89,8 @@ def get_dominant_color(image: Image.Image) -> tuple[int, int, int]:
     if TYPE_CHECKING:  # epic gaslighting right here
         dominant_color: tuple[int, int, int] = (0, 0, 0)
     else:
-        dominant_color = tuple(map(int, kmeans.cluster_centers_[0]))  # Get the dominant color and convert it into integers
-    
+        dominant_color = tuple(
+            map(int, kmeans.cluster_centers_[0])
+        )  # Get the dominant color and convert it into integers
+
     return dominant_color

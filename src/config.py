@@ -44,11 +44,11 @@ NOTIFY_ALL_ERRORS_TO_USER = True
 
 # SAVE_CUSTOM_LOGS      - Whether to save the logs produced by the custom logger.
 # SAVE_DISCORD_LOGS     - Whether to save the logs produced by the discord.py logger.
-# LOGGER_FLUSH_ON_PRINT - Save file contents as logger prints. 
+# LOGGER_FLUSH_ON_PRINT - Save file contents as logger prints.
 # Save path: ./logs/<bot name> <time>.log
 SAVE_CUSTOM_LOGS = True
 SAVE_DISCORD_LOGS = True
-LOGGER_FLUSH_ON_PRINT = False
+LOGGER_FLUSH_ON_PRINT = True
 
 # LOG_COMMANDS_TO_CONSOLE           - Log every text and slash command being used by a user to
 #                                     console.
@@ -62,15 +62,17 @@ LOG_NOT_FOUND_COMMANDS_TO_CONSOLE = True
 # NO_PERMISSIONS_MESSAGE     - The message sent when a user tries to use a command they don't
 #                              have permissions for.
 # BOT_NO_PERMISSIONS_MESSAGE - The message sent when the bot lacks the necessary permissions to
-#                              execute a command. 
+#                              execute a command.
 # COMMAND_NOT_FOUND_MESSAGE  - The message sent when a user tries to use a text command that does
 #                              not exist.
 # \n is a newline.
 # The value can be set to None (without the quotes) to disable it.
 MISSING_ARGUMENT_MESSAGE = "Missing argument `{argument}` of type `{type}`.\nFor more information refer to `{clean_prefix}help {command.qualified_name}`."
 NO_PERMISSIONS_MESSAGE = "You don't have permissions to use this command."
-BOT_NO_PERMISSIONS_MESSAGE = ("I'm missing permissions to run this command.\n"
-                              "Permissions required: {joined_permissions_code}")
+BOT_NO_PERMISSIONS_MESSAGE = (
+    "I'm missing permissions to run this command.\n"
+    "Permissions required: {joined_permissions_code}"
+)
 COMMAND_NOT_FOUND_MESSAGE = "Command `{ctx.clean_prefix}{command}` not found."
 
 # ITEMS_PER_PAGE - The amount of items to show in any sort of command with multiple pages.

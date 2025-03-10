@@ -2,21 +2,23 @@
 Bot-related utilities.
 """
 
-from typing import Optional
+import asyncio
+from typing import Sequence, Awaitable, TypeVar, TYPE_CHECKING
 
-from ..        import config
-from ..classes import Bot, BasicPrefix
+from .. import config
 
-import aiohttp
+if TYPE_CHECKING:
+    from ..classes import Bot, BasicPrefix
+
 import discord
 from discord.ext import commands
 
-__all__ = (
-    "get_prefix",
-    "get_raw_content_data"
-)
+T = TypeVar("T")
 
-async def get_prefix(bot: Bot, message: discord.Message) -> BasicPrefix:
+__all__ = ("get_prefix", "prevent_ratelimit")
+
+
+async def get_prefix(bot: "Bot", message: discord.Message) -> "BasicPrefix":
     """Get the prefix for the bot"""
     prefix = config.DEFAULT_PREFIX
     if config.MENTION_IS_ALSO_PREFIX:
@@ -24,14 +26,52 @@ async def get_prefix(bot: Bot, message: discord.Message) -> BasicPrefix:
     else:
         return prefix
 
-async def get_raw_content_data(url: str, *args, session: Optional[aiohttp.ClientSession] = None, **kwargs) -> bytes:
-    """Get raw content like files and media as bytes"""
-    async def get_with_session(session: aiohttp.ClientSession) -> bytes:
-        async with session.get(url, ssl=True if url.lower().startswith("https") else False, *args, **kwargs) as response:
-            return await response.content.read()
-    
-    if session is None:
-        async with aiohttp.ClientSession() as session:
-            return await get_with_session(session)
-    else:
-        return await get_with_session(session)
+
+async def prevent_ratelimit(
+    coros: Sequence[Awaitable[T]],
+    max_per_time: int,
+    time_period: float,
+    *,
+    return_exceptions: bool = False,
+) -> list[T | BaseException]:
+    """
+    Executes coroutines while respecting rate limits.
+
+    Args:
+        coros (Sequence[Awaitable[T]]): A list of multiple coroutine arguments.
+        max_per_time (int): Maximum number of coroutines to run in the specified time period.
+        time_period (float): The time period in seconds for the rate limit.
+        return_exceptions (bool, optional): Whether to return exceptions like `asyncio.gather`. Defaults to False.
+
+    Returns:
+        list[T | BaseException]: The results of the coroutines in the same order. If `return_exceptions` is True,
+        exceptions are included in the result list; otherwise, they raise normally.
+    """
+    results: list[T | BaseException] = []
+    semaphore = asyncio.Semaphore(max_per_time)
+
+    async def limited_execution(coroutine: Awaitable[T]) -> T | BaseException:
+        async with semaphore:
+            try:
+                return await coroutine
+            except BaseException as e:
+                if return_exceptions:
+                    return e
+                raise
+
+    tasks = [limited_execution(coro) for coro in coros]
+    for i in range(0, len(tasks), max_per_time):
+        batch = tasks[i : i + max_per_time]
+        results.extend(await asyncio.gather(*batch, return_exceptions=True))
+        if i + max_per_time < len(
+            tasks
+        ):  # Avoid unnecessary sleep after the last batch
+            await asyncio.sleep(time_period)
+
+    if not return_exceptions:
+        # Re-raise exceptions if not handled as results
+        for result in results:
+            if isinstance(result, BaseException):
+                raise result
+
+    return results
