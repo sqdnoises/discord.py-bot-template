@@ -38,42 +38,41 @@ import traceback
 from datetime import datetime
 from typing import Callable, Any, Literal
 
-from .config     import (
+from .config import (
     BOT_NAME,
     SAVE_CUSTOM_LOGS,
     LOGGER_TIME_FORMAT,
     LOGGER_FLUSH_ON_PRINT,
-    LOG_FILE_NAME_TIME_FORMAT
+    LOG_FILE_NAME_TIME_FORMAT,
 )
 from .termcolors import *
 from .termcolors import bg_rgb
 
-__all__ = (
-    "Logger",
-)
+__all__ = ("Logger",)
 
 LOG_TYPES_TEXT = {
     "text": {
-        "info":     "INFO    ",
-        "warning":  "WARNING ",
-        "error":    "ERROR   ",
+        "info": "INFO    ",
+        "warning": "WARNING ",
+        "error": "ERROR   ",
         "critical": "CRITICAL",
-        "debug":    "DEBUG   "
+        "debug": "DEBUG   ",
     },
     "color": {
-        "info":     bold              + blue     + "INFO    ",
-        "warning":  bold              + yellow   + "WARNING ",
-        "error":    bold              + red      + "ERROR   ",
-        "critical": bg_rgb(200, 0, 0) + white    + "CRITICAL",
-        "debug":    bold              + bg_black + "DEBUG   "
-    }
+        "info": bold + blue + "INFO    ",
+        "warning": bold + yellow + "WARNING ",
+        "error": bold + red + "ERROR   ",
+        "critical": bg_rgb(200, 0, 0) + white + "CRITICAL",
+        "debug": bold + bg_black + "DEBUG   ",
+    },
 }
+
 
 class Logger:
     """
     A customizable logger class that supports logging messages with different log levels,
     optional color formatting, and saving to a log file.
-    
+
     Parameters:
     - name (str): Name of the logger (default: BOT_NAME).
     - logs_folder (str | None): Directory to save log files (default: "logs" or None).
@@ -86,16 +85,16 @@ class Logger:
     - time_format (str): Format for the log timestamps (default: LOGGER_TIME_FORMAT).
     - log_file_name_time_format (str): Format for log file names (default: LOG_FILE_NAME_TIME_FORMAT).
     - log_types_text (dict): Dictionary containing text and color formats for different log types (default: LOG_TYPES_TEXT).
-    
+
     Example:
     ```py
     from logger import Logger
-    
+
     logging = Logger("My Program", log_level=5)
     logging.info("Hello World")
     ```
     """
-    
+
     def __init__(
         self,
         name: str = BOT_NAME,
@@ -110,12 +109,16 @@ class Logger:
         time_format: str = LOGGER_TIME_FORMAT,
         flush_on_print: bool = LOGGER_FLUSH_ON_PRINT,
         log_file_name_time_format: str = LOG_FILE_NAME_TIME_FORMAT,
-        log_types_text: dict[str, dict[str, str]] = LOG_TYPES_TEXT
+        log_types_text: dict[str, dict[str, str]] = LOG_TYPES_TEXT,
     ) -> None:
         """Initialize the Logger instance with the specified configuration options."""
         self.name = str(name)
         self.logs_folder = logs_folder
-        self.log_file = self._get_log_file_path(logs_folder, log_file_name_time_format) if logs_folder else None
+        self.log_file = (
+            self._get_log_file_path(logs_folder, log_file_name_time_format)
+            if logs_folder
+            else None
+        )
         self.prefix = prefix or self._prefix_handler
         self.log_level = log_level
         self.log_file_log_level = log_file_log_level
@@ -126,40 +129,42 @@ class Logger:
         self.flush_on_print = flush_on_print
         self.log_file_name_time_format = log_file_name_time_format
         self.log_types_text = log_types_text
-        self._log_file_object = None # To hold the file object
-    
-    def _get_log_file_path(self, logs_folder: str, log_file_name_time_format: str) -> str:
+        self._log_file_object = None  # To hold the file object
+
+    def _get_log_file_path(
+        self, logs_folder: str, log_file_name_time_format: str
+    ) -> str:
         """
         Generates a log file path with an incremented number if the file already exists.
-        
+
         Parameters:
         - logs_folder (str): Directory to save the log file.
         - log_file_name_time_format (str): Format for log file names.
-        
+
         Returns:
         - str: The path to the log file.
         """
         base_name = f"{self.name} {datetime.now().strftime(log_file_name_time_format)}"
         log_file = os.path.join(logs_folder, f"{base_name}.log")
         counter = 1
-        
+
         while os.path.exists(log_file):
             log_file = os.path.join(logs_folder, f"{base_name} {counter}.log")
             counter += 1
-        
+
         return log_file
-    
+
     def log(
         self,
         log_type: Literal["info", "warning", "error", "critical", "debug"] | int,
         message: Any,
         *,
         do_print: bool = True,
-        do_save: bool = True
+        do_save: bool = True,
     ) -> None:
         """
         Logs a message with a given log type and message content.
-        
+
         Parameters:
         - log_type (str or int): Log type (e.g., "info", "warning", "error", "critical", "debug" or corresponding integer).
         - message (Any): Message content to log.
@@ -167,32 +172,28 @@ class Logger:
         - do_save (bool): Whether to save the log message to the log file (default: True).
         """
         log_level = self._get_log_level(log_type)
-        
+
         # Print log message if the level is less than or equal to current log level
         if do_print and log_level <= self.log_level:
-            prefix = str(self.prefix(log_type))  # pyright: ignore[reportCallIssue, reportArgumentType]
+            prefix = str(self.prefix(log_type))  # type: ignore
             print(prefix + str(message), end=reset + "\n", flush=True)
-        
+
         # Save log message to file if applicable
         if do_save and self.log_file and log_level <= self.log_file_log_level:
-            prefix = str(self.prefix(log_type, color=False))  # pyright: ignore[reportCallIssue, reportArgumentType]
-            if self.logs_folder: os.makedirs(self.logs_folder, exist_ok=True)
+            prefix = str(self.prefix(log_type, color=False))  # type: ignore
+            if self.logs_folder:
+                os.makedirs(self.logs_folder, exist_ok=True)
             # Open the file only once when logging starts and store the file object
             if self._log_file_object is None:
                 self._log_file_object = open(self.log_file, "a", encoding="utf-8")
-            self._log_file_object.write(prefix + str(message) + "\n") # Use the stored file object
+            self._log_file_object.write(
+                prefix + str(message) + "\n"
+            )  # Use the stored file object
             if self.flush_on_print:
                 self._log_file_object.flush()
-    
+
     def _get_log_level(
-        self,
-        log_type: Literal[
-            "info",
-            "warning",
-            "error",
-            "critical",
-            "debug"
-        ] | int
+        self, log_type: Literal["info", "warning", "error", "critical", "debug"] | int
     ) -> int:
         """Helper method to map log types to log levels."""
         log_level_mapping = {
@@ -200,18 +201,14 @@ class Logger:
             "warning": 2,
             "error": 3,
             "critical": 4,
-            "debug": 5
+            "debug": 5,
         }
         if isinstance(log_type, int):
             return log_type
         return log_level_mapping.get(log_type, 5)
-    
+
     def info(
-        self,
-        message: Any,
-        *,
-        do_print: bool = True,
-        do_save: bool = True
+        self, message: Any, *, do_print: bool = True, do_save: bool = True
     ) -> None:
         """
         Logs an info-level message.
@@ -222,13 +219,9 @@ class Logger:
         - do_save (bool): Whether to save the log message to the log file (default: True).
         """
         self.log("info", message, do_print=do_print, do_save=do_save)
-    
+
     def warn(
-        self,
-        message: Any,
-        *,
-        do_print: bool = True,
-        do_save: bool = True
+        self, message: Any, *, do_print: bool = True, do_save: bool = True
     ) -> None:
         """
         Alias for warning(). Logs a warning-level message.
@@ -239,13 +232,9 @@ class Logger:
         - do_save (bool): Whether to save the log message to the log file (default: True).
         """
         self.warning(message, do_print=do_print, do_save=do_save)
-    
+
     def warning(
-        self,
-        message: Any,
-        *,
-        do_print: bool = True,
-        do_save: bool = True
+        self, message: Any, *, do_print: bool = True, do_save: bool = True
     ) -> None:
         """
         Logs a warning-level message.
@@ -256,14 +245,14 @@ class Logger:
         - do_save (bool): Whether to save the log message to the log file (default: True).
         """
         self.log("warning", message, do_print=do_print, do_save=do_save)
-    
+
     def err(
         self,
         message: Any,
         exc_info: Exception | None = None,
         *,
         do_print: bool = True,
-        do_save: bool = True
+        do_save: bool = True,
     ) -> None:
         """
         Alias for error(). Logs an error-level message with optional exception information.
@@ -275,18 +264,18 @@ class Logger:
         - do_save (bool): Whether to save the log message to the log file (default: True).
         """
         self.error(message, exc_info, do_print=do_print, do_save=do_save)
-    
+
     def error(
         self,
         message: Any,
         exc_info: Exception | None = None,
         *,
         do_print: bool = True,
-        do_save: bool = True
+        do_save: bool = True,
     ) -> None:
         """
         Logs an error-level message with optional exception information.
-        
+
         Parameters:
         - message (Any): Message content to log.
         - exc_info (Exception | None): Exception information to include in the log (default: None).
@@ -296,36 +285,36 @@ class Logger:
         if exc_info:
             message = f"{message}\n{traceback.format_exc()}"
         self.log("error", message, do_print=do_print, do_save=do_save)
-    
+
     def crit(
         self,
         message: Any,
         exc_info: Exception | None = None,
         *,
         do_print: bool = True,
-        do_save: bool = True
+        do_save: bool = True,
     ) -> None:
         """
         Alias for critical(). Logs a critical-level message.
-        
+
         Parameters:
         - message (Any): Message content to log.
         - do_print (bool): Whether to print the log message to the console (default: True).
         - do_save (bool): Whether to save the log message to the log file (default: True).
         """
         self.critical(message, exc_info=exc_info, do_print=do_print, do_save=do_save)
-    
+
     def critical(
         self,
         message: Any,
         exc_info: Exception | None = None,
         *,
         do_print: bool = True,
-        do_save: bool = True
+        do_save: bool = True,
     ) -> None:
         """
         Logs a critical-level message.
-        
+
         Parameters:
         - message (Any): Message content to log.
         - do_print (bool): Whether to print the log message to the console (default: True).
@@ -334,13 +323,9 @@ class Logger:
         if exc_info:
             message = f"{message}\n{traceback.format_exc()}"
         self.log("critical", message, do_print=do_print, do_save=do_save)
-    
+
     def debug(
-        self,
-        message: Any,
-        *,
-        do_print: bool = True,
-        do_save: bool = True
+        self, message: Any, *, do_print: bool = True, do_save: bool = True
     ) -> None:
         """
         Logs a debug-level message.
@@ -351,21 +336,15 @@ class Logger:
         - do_save (bool): Whether to save the log message to the log file (default: True).
         """
         self.log("debug", message, do_print=do_print, do_save=do_save)
-    
+
     def _prefix_handler(
         self,
-        log_type: Literal[
-            "info",
-            "warning",
-            "error",
-            "critical",
-            "debug"
-        ],
-        color: bool = True
+        log_type: Literal["info", "warning", "error", "critical", "debug"],
+        color: bool = True,
     ) -> str:
         """
         Generates the log message prefix including the timestamp, logger name, and log type.
-        
+
         Parameters:
         - log_type (str): Log type (e.g., "info", "warning", "error", "critical", "debug").
         - color (bool): Whether to include color formatting in the prefix (default: True).
@@ -376,12 +355,13 @@ class Logger:
         if color:
             return f"{reset}{self.timestamp_color}{datetime.now().strftime(self.time_format)}{reset} {self.log_types_text['color'].get(log_type, '')}{reset} {self.name_color}{self.name}{reset} {self.message_color}"
         return f"{datetime.now().strftime(self.time_format)} {self.log_types_text['text'].get(log_type, '')} {self.name} > "
-    
+
     def close(self) -> None:
         """Flushes any buffered data and closes the log file if it's open."""
         if self._log_file_object:
-            self._log_file_object.flush() # Flush the buffer
-            self._log_file_object.close() # Close the file
-            self._log_file_object = None # Reset the file object
+            self._log_file_object.flush()  # Flush the buffer
+            self._log_file_object.close()  # Close the file
+            self._log_file_object = None  # Reset the file object
+
 
 logging = Logger()
