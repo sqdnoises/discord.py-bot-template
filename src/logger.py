@@ -1,5 +1,5 @@
 """
-This module provides a customizable logger class for handling various log levels 
+This module provides a customizable logger class for handling various log levels
 with optional color formatting and file saving support.
 
 Usage:
@@ -30,7 +30,6 @@ Usage:
 
 Copyright (c) 2023-present SqdNoises
 Licensed under the MIT License
-For more information, please check the provided LICENSE file.
 """
 
 import os

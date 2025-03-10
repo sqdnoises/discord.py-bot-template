@@ -1,37 +1,31 @@
 import sys
-import logging       as logg
+import logging as logg
 import pkg_resources
-from typing   import (
-    TYPE_CHECKING, Optional
-)
+from typing import TYPE_CHECKING, Optional
 from datetime import datetime
 
-from ..           import cogs
-from ..           import utils
-from ..           import config
-from ..utils      import mprint
-from ..logger     import logging
+from .. import cogs
+from .. import utils
+from .. import config
+from ..utils import mprint
+from ..logger import logging
 from ..termcolors import *
 from ..termcolors import rgb
 
-from .context      import Context
+from .context import Context
 from .command_tree import CommandTree
 
 if TYPE_CHECKING:
-    from .custom_types import (
-        ContextT_co,
-        PrefixType
-    )
+    from .custom_types import ContextT_co, PrefixType
 
 from prisma import Prisma
 
 import discord
-from discord     import app_commands
+from discord import app_commands
 from discord.ext import commands
 
-__all__ = (
-    "Bot",
-)
+__all__ = ("Bot",)
+
 
 class Bot(commands.Bot):
     tree: CommandTree
@@ -40,177 +34,213 @@ class Bot(commands.Bot):
     log_channel: Optional[discord.TextChannel]
     log_channel_id: Optional[int]
     all_app_commands: dict[str, app_commands.AppCommand]
-    
+
     def __init__(
         self,
         command_prefix: "PrefixType",
         *args,
         intents: discord.Intents = discord.Intents.all(),
         tree_cls: type[app_commands.CommandTree] = CommandTree,
-        **kwargs
+        **kwargs,
     ) -> None:
         super().__init__(
-            command_prefix = command_prefix,
-            intents = intents,
-            tree_cls = tree_cls,
+            command_prefix=command_prefix,
+            intents=intents,
+            tree_cls=tree_cls,
             *args,
             **kwargs,
-            help_command = commands.DefaultHelpCommand()
+            help_command=commands.DefaultHelpCommand(),
         )
         self.uptime = None
         self.prisma = Prisma(auto_register=True)
-        
-        self.all_app_commands = {}
-        
+
         self.log_channel_id = config.LOG_CHANNEL
         self.log_channel = None
-    
+
     async def connect_db(self) -> None:
         if self.prisma.is_connected():
             logging.warn("tried to connect to database while already connected")
             return
-        
+
         await self.prisma.connect()
         logging.info(f"connected to database {config.DATABASE_LOCATION}")
-    
+
     async def disconnect_db(self) -> None:
         if not self.prisma.is_connected():
             logging.warn("tried to disconnect from database while already disconnected")
             return
-        
+
         await self.prisma.disconnect()
         logging.info("disconnected from database")
-    
+
     async def enable_wal_mode(self) -> None:
         try:
             await self.prisma.execute_raw("PRAGMA journal_mode=WAL;")
             print("SQLite3 journal mode set to WAL.")
         except Exception as e:
             print(f"Error setting WAL mode: {e}")
-    
+
     async def _load_all_cogs(self) -> None:
         loaded = []
         excluded = []
-        
+
         exclude = config.COGS_EXCLUDE
         for module in utils.list_modules(cogs):
-            if module in exclude or module.replace(cogs.__package__+".", "", 1) in exclude: # pyright: ignore[reportOptionalOperand]
-                excluded.append(module + f" {rgb(49, 49, 49)}(excluded in config){reset}")
+            module_imported = utils.import_submodule(module)
+
+            if (
+                module in exclude
+                or module.replace(cogs.__package__ + ".", "", 1) in exclude  # type: ignore
+            ):
+                excluded.append(
+                    module + f" {rgb(49, 49, 49)}(excluded in config){reset}"
+                )
                 continue
-            
+
+            if hasattr(module_imported, "__ignore__") and getattr(
+                module_imported, "__ignore__"
+            ):
+                excluded.append(module + f" {rgb(49, 49, 49)}(ignored){reset}")
+                continue
+
             try:
                 await self.load_extension(module)
-            
+
             except commands.NoEntryPointError:
-                logging.warn(f"excluding `{module}` because there is no entry point (no 'setup' function found)")
-                excluded.append(module + f" {rgb(49, 49, 49)}(no 'setup' function){reset}")
-            
+                logging.warn(
+                    f"excluding `{module}` because there is no entry point (no 'setup' function found)"
+                )
+                excluded.append(
+                    module + f" {rgb(49, 49, 49)}(no 'setup' function){reset}"
+                )
+
             except Exception as e:
-                logging.critical(f"excluding `{module}` because there was an error while loading it (this may cause unintended behaviour)", exc_info=e)
-                excluded.append(module + f" {rgb(49, 49, 49)}(error: {e.__class__.__name__}){reset}")
-            
+                logging.critical(
+                    f"excluding `{module}` because there was an error while loading it (this may cause unintended behaviour)",
+                    exc_info=e,
+                )
+                excluded.append(
+                    module + f" {rgb(49, 49, 49)}(error: {e.__class__.__name__}){reset}"
+                )
+
             else:
                 loaded.append(module)
-        
+
         loaded_paginated = utils.paginate(loaded, 3)
         excluded_paginated = utils.paginate(excluded, 2)
         prefix_length = len(utils.strip_color(logging._prefix_handler("info")))
-        
+
         loaded_str = f"the following cogs have been {underline}loaded{reset}:\n"
         for x in loaded_paginated:
-            loaded_str += (" "*prefix_length)+ f"{', '.join(x)}\n"
-        
+            loaded_str += (" " * prefix_length) + f"{', '.join(x)}\n"
+
         excluded_str = f"the following cogs have been {underline}excluded{reset}:\n"
         for x in excluded_paginated:
-            excluded_str += (" "*prefix_length)+ f"{', '.join(x)}\n"
-        
+            excluded_str += (" " * prefix_length) + f"{', '.join(x)}\n"
+
         logging.info(loaded_str.strip())
         logging.info(excluded_str.strip())
-        
+
         logging.info(f"commands loaded: {len(self.commands)}")
-    
+
     async def _setup_log_channel(self) -> None:
         if self.log_channel_id is None:
             logging.warn("log channel not set because log channel id was not set")
             self.log_channel = None
             return
-        
+
         logging.info(f"getting log channel with id {self.log_channel_id}")
         channel = await self.fetch_channel(self.log_channel_id)
-        
+
         if isinstance(channel, discord.TextChannel):
             self.log_channel = channel
         else:
-            logging.critical(f"log channel with id {self.log_channel_id} is not a text channel, log_channel not set")
-        
+            logging.critical(
+                f"log channel with id {self.log_channel_id} is not a text channel, log_channel not set"
+            )
+
         if not self.log_channel:
-            logging.critical(f"log channel with id {self.log_channel_id} not found. this can cause problems.")
+            logging.critical(
+                f"log channel with id {self.log_channel_id} not found. this can cause problems."
+            )
         else:
-            logging.info(f"log channel: #{self.log_channel.name} (id: {self.log_channel.id})")
-    
+            logging.info(
+                f"log channel: #{self.log_channel.name} (id: {self.log_channel.id})"
+            )
+
     async def setup_hook(self) -> None:
         self.uptime = discord.utils.utcnow()
-        
+
+        if TYPE_CHECKING and (self.log_channel is None or self.user is None):
+            return  # to satisfy the typechecker (aka epic gaslight)
+
         mprint()
-        mprint(f"{white}~{reset} {bold}{green}{config.BOT_NAME.upper()}{reset} {white}~{reset}")
-        mprint(f"{bright_green}running on{reset} {yellow}python{reset} {blue}{sys.version.split()[0]}{reset}; {yellow}discord.py{reset} {blue}{pkg_resources.get_distribution('discord.py').version}{reset}")
+        mprint(
+            f"{white}~{reset} {bold}{green}{config.BOT_NAME.upper()}{reset} {white}~{reset}"
+        )
+        mprint(
+            f"{bright_green}running on{reset} {yellow}python{reset} {blue}{sys.version.split()[0]}{reset}; {yellow}discord.py{reset} {blue}{pkg_resources.get_distribution('discord.py').version}{reset}"
+        )
         mprint()
-        
+
         await self.connect_db()
         await self._load_all_cogs()
-        
-        if TYPE_CHECKING and self.user is None:
-            return  # to satisfy the type checker
-        
+
         await self.tree.update_app_commands()
-        logging.info(f"app commands loaded: {len(self.all_app_commands)}")
-        
+        logging.info(f"app commands loaded: {len(self.tree.all_app_commands)}")
+
         logging.info("logged in successfully")
         logging.info(f"user: {self.user} ({self.user.id})")
-        logging.info(f"invite: https://discord.com/oauth2/authorize?client_id={self.user.id}&permissions=8&scope=bot+applications.commands")
-        
+        logging.info(
+            f"invite: https://discord.com/oauth2/authorize?client_id={self.user.id}&permissions=8&scope=bot+applications.commands"
+        )
+
         await self._setup_log_channel()
-        
-        if TYPE_CHECKING and (
-            self.log_channel is None
-            or self.user is None
-        ):
-            # to satisfy the typechecker (aka epic gaslight)
-            return
-        
+
         try:
-            await self.log_channel.send(f"**{self.user.name}** logged in successfully", silent=True)
+            await self.log_channel.send(
+                f"**{self.user.name}** logged in successfully", silent=True
+            )
         except Exception as e:
-            logging.critical(f"could not send log message to log channel with id {self.log_channel_id} due to exception:", exc_info=e)
-    
+            logging.critical(
+                f"could not send log message to log channel with id {self.log_channel_id} due to exception:",
+                exc_info=e,
+            )
+
     async def close(self, *, abandon: bool = False) -> None:
         """Disconnect from the database, close the bot, flush stdout & stderr and shutdown loggers"""
         # Disconnect from the database
         await self.disconnect_db()
-        
+
         # Close the bot
         await super().close()
-        
+
         # Flush stdout & stderr
         sys.stdout.flush()
         sys.stderr.flush()
-        
+
         # Shutdown loggers
-        logging.critical("bot process exited" if not abandon else "bot process exited (abandoned)")
+        logging.critical(
+            "bot process exited" if not abandon else "bot process exited (abandoned)"
+        )
         logg.shutdown()
         logging.close()
-        
+
         if abandon:
             print()
-    
+
     def slash_mention(self, qualified_command_name: str) -> str:
         """Mention an application command like a normal user or channel mention"""
         return self.tree.slash_mention(qualified_command_name)
-    
-    async def get_context(self, message: discord.Message, *, cls: type["ContextT_co"] = Context) -> "ContextT_co":
+
+    async def get_context(
+        self, message: discord.Message, *, cls: type["ContextT_co"] = Context
+    ) -> "ContextT_co":
         return await super().get_context(message, cls=cls)
-    
+
     @staticmethod
-    async def get_context_from_interaction(interaction: discord.Interaction, *, cls: type["ContextT_co"] = Context) -> "ContextT_co":
+    async def get_context_from_interaction(
+        interaction: discord.Interaction, *, cls: type["ContextT_co"] = Context
+    ) -> "ContextT_co":
         """Get Context from a discord.Interaction"""
         return await cls.from_interaction(interaction)

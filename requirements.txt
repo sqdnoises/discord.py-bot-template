@@ -8,6 +8,9 @@ ping3
 aiohttp
 requests
 
+# markdown
+markdownify
+
 # Database
 prisma
 

@@ -7,9 +7,12 @@ Licensed under the MIT License
 For more information, please check the provided LICENSE file.
 """
 
-from .bot        import start
+from .bot import start
 from .termcolors import *
 
 if __name__ == "__main__":
     start()
-    print(f"{bold}{blue}> {yellow}cya later {green}alligator {magenta}:3{reset}", flush=True)
+    print(
+        f"{bold}{blue}> {yellow}cya later {green}alligator {magenta}:3{reset}",
+        flush=True,
+    )
