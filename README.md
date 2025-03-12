@@ -133,3 +133,8 @@ If you host the bot on linux and use the `/ping` command, you will likely see th
 Linux uses a kernel parameter that restricts who can create ping sockets.
 
 For troubleshooting, please refer to: [<kbd> kyan001/ping3/TROUBLESHOOTING.md </kbd>](https://github.com/kyan001/ping3/blob/master/TROUBLESHOOTING.md)
+
+---
+
+<sub>© 2023-present SqdNoises.<br>
+Licensed under the MIT License.</sub>
