@@ -26,6 +26,7 @@ This template was created, developed and meant to be used with the [**Visual Stu
 ### recommended Visual Studio Code extensions for this template
 - autoDocstring (by Nils Werner)
 - Better Color Picker (by Jannchie)
+- Black Formatter (by Microsoft)
 - Error lens (by Alexander)
 - Local History (by xyz)
 - Prisma (by Prisma)
