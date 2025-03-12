@@ -39,8 +39,8 @@ DEBUG = True
 #                             (slash commands, context menu, buttons, etc.)
 # LOG_CHANNEL               - A channel ID which the bot has access to so it can send bot logs.
 # NOTE: LOG_CHANNEL can be set to None to disable it.
-LOG_CHANNEL = 1318631693929680896
 NOTIFY_ALL_ERRORS_TO_USER = True
+LOG_CHANNEL = 1318631693929680896
 
 # SAVE_CUSTOM_LOGS      - Whether to save the logs produced by the custom logger.
 # SAVE_DISCORD_LOGS     - Whether to save the logs produced by the discord.py logger.
