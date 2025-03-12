@@ -28,7 +28,7 @@ This template was created, developed and meant to be used with the [**Visual Stu
 - Better Color Picker (by Jannchie)
 - Black Formatter (by Microsoft)
 - Error lens (by Alexander)
-- GitHub Markdown Preview [Extension Pack (6)] (by Matt Bierner)
+- GitHub Markdown Preview <sub>[Extension Pack]</sub> (by Matt Bierner)
   1. Markdown Preview GitHub Styling (by Matt Bierner)
   2. Markdown Emoji (by Matt Bierner)
   3. Markdown Checkboxes (by Matt Bierner)
