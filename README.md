@@ -4,6 +4,7 @@
 
 [![](https://img.shields.io/badge/Python-3.10+-FFD43B?labelColor=306998&style=for-the-badge&logo=python&logoColor=white)](https://python.org)
 [![](https://img.shields.io/badge/License-MIT-009900?style=for-the-badge&labelColor=111111)](LICENSE)
+[![](https://img.shields.io/badge/code_style-black-000000?style=for-the-badge&labelColor=FFFFFF)](https://github.com/psf/black)
 
 a discord.py bot template that I use for my bots.\
 you're free to use this template if you like.
