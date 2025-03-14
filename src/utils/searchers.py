@@ -108,36 +108,35 @@ def get_matches(query: str, search_list: list[str]) -> list[str]:
 
     # Preprocess query for case-insensitive comparison
     for item in search_list:
-        # Check for direct match
-        if match(item, query) and item not in matches:
+        if item not in matches and match(item, query):
             matches.append(item)
 
     return matches
 
 
 def get_matches_by_attr(
-    query: str, search_list: list[T], *, key: Callable[[T], str] = lambda _: str(_)
+    query: str,
+    search_list: list[T],
+    *,
+    key: Callable[[T], str | list[str]] = lambda _: str(_)
 ) -> list[T]:
     """
-    Find objects in `search_list` where the string extracted by `key` "matches" the `query` string, meaning that all
-    fragments of the extracted string are substrings of some fragments of the `query`, using case-insensitive matching.
+    Find objects in `search_list` where the fragments extracted by `key` (from a string or list) all match as substrings within the fragments of `query`, using case-insensitive matching.
 
     **Behavior:**
-    - For each object in `search_list`, extract a string using `key(object)`.
-    - Check if `match(key(object), query)` returns `True`, where `match` tests if all fragments of the extracted string
-      (split by whitespace) are substrings of at least one fragment of the `query` (split by whitespace), case-insensitively.
-    - Collect and return all objects from `search_list` that satisfy this condition, ensuring no duplicates by checking
-      object membership in the result list.
+    - For each object in `search_list`, extract fragments using `key(object)`:
+      - If `key(object)` returns a string, it is split into fragments by whitespace.
+      - If `key(object)` returns a list of strings, each string is treated as a separate fragment.
+    - Use the `match` function to check if all extracted fragments are substrings of at least one whitespace-split fragment of `query`, case-insensitively.
+    - Collect and return unique objects from `search_list` where this condition is satisfied.
 
     Args:
-        query (str): The string within which to search for matches; acts as the text that the extracted strings are
-            matched against.
+        query (str): The string within which to search for matches.
         search_list (list[T]): A list of objects to check against the `query`.
-        key (Callable[[T], str], optional): A function that takes an object and returns a string to be matched against
-            the `query`. Defaults to converting the object to a string.
+        key (Callable[[T], str | list[str]], optional): A function that takes an object and returns either a string or a list of strings representing the fragments to match against `query`. Defaults to converting the object to a string using `str()`.
 
     Returns:
-        list[T]: A list of unique objects from `search_list` where the extracted string matches the `query`.
+        list[T]: A list of unique objects from `search_list` where all extracted fragments match the `query`.
 
     Examples:
         >>> class Obj:
@@ -147,14 +146,22 @@ def get_matches_by_attr(
         ...         return f"Obj({self.name})"
         >>> objects = [Obj("ell"), Obj("wor"), Obj("foo")]
         >>> get_matches_by_attr("Hello World", objects, key=lambda o: o.name)
-        [Obj(ell), Obj(wor)]  # "ell" is in "hello", "wor" is in "world", "foo" is not in either
+        [Obj(ell), Obj(wor)]  # "ell" is in "hello", "wor" is in "world"
+
+        >>> class MultiObj:
+        ...     def __init__(self, names: list[str]):
+        ...         self.names = names
+        ...     def __repr__(self):
+        ...         return f"MultiObj({self.names})"
+        >>> multi_objects = [MultiObj(["ell", "wor"]), MultiObj(["foo", "bar"]), MultiObj(["hello", "world"])]
+        >>> get_matches_by_attr("Hello World", multi_objects, key=lambda o: o.names)
+        [MultiObj(['ell', 'wor']), MultiObj(['hello', 'world'])]  # All fragments in ["ell", "wor"] and ["hello", "world"] match
     """
     matches: list[T] = []
 
     # Preprocess query for case-insensitive comparison
     for item in search_list:
-        # Check for direct match
-        if match(key(item), query) and item not in matches:
+        if item not in matches and match(key(item), query):
             matches.append(item)
 
     return matches
@@ -164,37 +171,44 @@ def get_identifiable_matches(
     query: str, search_dict: dict[str, T]
 ) -> list[dict[str, T]]:
     """
-    Find entries in `search_dict` where the key "matches" the `query` string, meaning that all fragments of the key
-    are substrings of some fragments of the `query`, using case-insensitive matching.
+    Find entries in `search_dict` where either the key or the value (if it is a string) "matches" the `query` string,
+    using case-insensitive matching.
 
     **Behavior:**
-    - For each key-value pair in `search_dict`, check if `match(key, query)` returns `True`, where `match` tests if all
-      fragments of the key (split by whitespace) are substrings of at least one fragment of the `query` (split by
-      whitespace), case-insensitively.
-    - For each matching key, append a dictionary `{key: value}` to the result list. The original code includes a check
-      `value not in matches`, but since `matches` contains dictionaries and `value` is of type `T`, this check is
-      typically ineffective and does not prevent duplicates; however, because dictionary keys are unique, each
-      `{key: value}` entry is unique by construction.
+    - For each key-value pair in `search_dict`, evaluate:
+      - `match(key, query)` returns `True`, or
+      - `value` is a string and `match(value, query)` returns `True`.
+    - Here, `match(a, b)` checks if all fragments of `a` (split by whitespace) are substrings of at least one fragment
+      of `b` (split by whitespace), case-insensitively.
+    - If either condition is true and `value not in matches`, append `{key: value}` to the result list. Note that
+      `value not in matches` is typically ineffective since `matches` contains dictionaries, but uniqueness is ensured
+      by the distinct keys of `search_dict`.
+    - Returns a list of unique `{key: value}` dictionaries for matching pairs.
 
     Args:
-        query (str): The string within which to search for matches; acts as the text that the keys are matched against.
-        search_dict (dict[str, T]): A dictionary where keys are strings to be matched against the `query`, and values
-            are associated objects.
+        query (str): The string within which to search for matches.
+        search_dict (dict[str, T]): A dictionary with string keys and values of type `T`, where keys and string values
+            are matched against the `query`.
 
     Returns:
-        list[dict[str, T]]: A list of dictionaries `{key: value}` for each key that matches the `query`.
+        list[dict[str, T]]: A list of dictionaries `{key: value}` for each key-value pair where either the key or the
+            value (if a string) matches the `query`.
 
     Examples:
-        >>> search_dict = {"ell": 1, "wor": 2, "foo": 3}
+        >>> search_dict = {"ell": "foo", "bar": "wor", "baz": "xyz"}
         >>> get_identifiable_matches("Hello World", search_dict)
-        [{'ell': 1}, {'wor': 2}]  # "ell" is in "hello", "wor" is in "world", "foo" is not in either
+        [{'ell': 'foo'}, {'bar': 'wor'}]  # "ell" matches "Hello", "wor" matches "World"
+        >>> search_dict = {"a": "ell", "b": "foo", "c": "wor"}
+        >>> get_identifiable_matches("Hello World", search_dict)
+        [{'a': 'ell'}, {'c': 'wor'}]  # "ell" matches "Hello", "wor" matches "World"
     """
     matches: list[dict[str, T]] = []
 
     # Preprocess query for case-insensitive comparison
     for key, value in search_dict.items():
-        # Check for direct match
-        if match(key, query) and value not in matches:
+        if value not in matches and (
+            match(key, query) or (isinstance(value, str) and match(value, query))
+        ):
             matches.append({key: value})
 
     return matches
