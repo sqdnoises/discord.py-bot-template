@@ -15,7 +15,10 @@ from discord.ext import commands
 
 T = TypeVar("T")
 
-__all__ = ("get_prefix", "prevent_ratelimit")
+__all__ = (
+    "get_prefix",
+    "prevent_ratelimit",
+)
 
 
 async def get_prefix(bot: "Bot", message: discord.Message) -> "BasicPrefix":

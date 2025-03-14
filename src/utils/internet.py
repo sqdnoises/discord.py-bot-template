@@ -9,7 +9,12 @@ from dataclasses import dataclass
 import aiohttp
 from markdownify import markdownify
 
-__all__ = ("SearchResult", "get_raw_content_data", "read_website", "search_web")
+__all__ = (
+    "SearchResult",
+    "get_raw_content_data",
+    "read_website",
+    "search_web",
+)
 
 
 @dataclass

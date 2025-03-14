@@ -7,7 +7,10 @@ from itertools import islice
 
 T = TypeVar("T")
 
-__all__ = ("paginate", "slice")
+__all__ = (
+    "paginate",
+    "slice",
+)
 
 
 def paginate(

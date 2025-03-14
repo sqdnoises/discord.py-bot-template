@@ -13,7 +13,10 @@ from PIL import Image
 from PIL.Image import Image as PILImage
 from sklearn.cluster import KMeans
 
-__all__ = ("fetch_image", "get_dominant_color")
+__all__ = (
+    "fetch_image",
+    "get_dominant_color",
+)
 
 
 async def fetch_image(
