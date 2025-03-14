@@ -1,5 +1,5 @@
 import asyncio
-from typing import TYPE_CHECKING, Literal, Iterable
+from typing import Literal, Iterable
 
 from .. import utils
 from ..classes import Bot, Cog
@@ -107,9 +107,8 @@ class Utilities(Cog):
     @app_commands.allowed_installs(guilds=True, users=True)
     @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
     async def statistics(self, interaction: discord.Interaction) -> None:
-        if TYPE_CHECKING and (self.bot.uptime is None or self.bot.user is None):
-            # to satisfy the typechecker
-            return
+        assert self.bot.user is not None
+        assert self.bot.uptime is not None
 
         embed = discord.Embed(
             title=f"🌟 {self.bot.user.display_name} Statistics",
@@ -152,8 +151,8 @@ class Utilities(Cog):
     @app_commands.allowed_installs(guilds=True, users=True)
     @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
     async def install(self, interaction: discord.Interaction) -> None:
-        if TYPE_CHECKING and (self.bot.user is None or self.bot.application_id is None):
-            return  # to satisfy the typechecker
+        assert self.bot.user is not None
+        assert self.bot.application_id is not None
 
         embed = discord.Embed(
             title=f"Install {self.bot.user.display_name}",

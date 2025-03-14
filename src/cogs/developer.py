@@ -9,7 +9,7 @@ import asyncio
 import datetime
 import textwrap
 import pkg_resources
-from typing import TYPE_CHECKING, Literal, Optional
+from typing import Literal, Optional
 from contextlib import redirect_stdout, redirect_stderr
 
 from .. import utils
@@ -221,9 +221,7 @@ class Developer(Cog):
     ) -> None:
         """Run a command as another user optionally in another channel"""
 
-        if TYPE_CHECKING and ctx.prefix is None:
-            # to satisfy the typechecker
-            return
+        assert ctx.prefix is not None
 
         msg = copy.copy(ctx.message)
         new_channel = channel or ctx.channel
@@ -513,9 +511,7 @@ class Developer(Cog):
         https://about.abstractumbra.dev/discord.py/2023/01/29/sync-command-example.html
         """
 
-        if TYPE_CHECKING and ctx.guild is None:
-            # to satisfy the typechecker
-            return
+        assert ctx.guild is not None
 
         if not guilds:
             if spec == "~":

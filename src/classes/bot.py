@@ -150,7 +150,14 @@ class Bot(commands.Bot):
             return
 
         logging.info(f"getting log channel with id {self.log_channel_id}")
-        channel = await self.fetch_channel(self.log_channel_id)
+        try:
+            channel = await self.fetch_channel(self.log_channel_id)
+        except Exception as e:
+            logging.critical(
+                f"could not get log channel with id {self.log_channel_id} due to exception:",
+                exc_info=e,
+            )
+            return
 
         if isinstance(channel, discord.TextChannel):
             self.log_channel = channel
@@ -171,8 +178,7 @@ class Bot(commands.Bot):
     async def setup_hook(self) -> None:
         self.uptime = discord.utils.utcnow()
 
-        if TYPE_CHECKING and (self.log_channel is None or self.user is None):
-            return  # to satisfy the typechecker (aka epic gaslight)
+        assert self.user is not None
 
         mprint()
         mprint(
@@ -198,9 +204,10 @@ class Bot(commands.Bot):
         await self._setup_log_channel()
 
         try:
-            await self.log_channel.send(
-                f"**{self.user.name}** logged in successfully", silent=True
-            )
+            if self.log_channel is not None:
+                await self.log_channel.send(
+                    f"**{self.user.name}** logged in successfully", silent=True
+                )
         except Exception as e:
             logging.critical(
                 f"could not send log message to log channel with id {self.log_channel_id} due to exception:",
