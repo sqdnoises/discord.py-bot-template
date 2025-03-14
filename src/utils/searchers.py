@@ -116,7 +116,7 @@ def get_matches(query: str, search_list: list[str]) -> list[str]:
 
 
 def get_matches_by_attr(
-    query: str, search_list: list[T], key: Callable[[T], str] = lambda _: str(_)
+    query: str, search_list: list[T], *, key: Callable[[T], str] = lambda _: str(_)
 ) -> list[T]:
     """
     Find objects in `search_list` where the string extracted by `key` "matches" the `query` string, meaning that all
