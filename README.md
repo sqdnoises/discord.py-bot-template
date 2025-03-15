@@ -9,21 +9,22 @@
 a discord.py bot template that I use for my bots.\
 you're free to use this template if you like.
 
-## License
+</div>
+
+## License [![](https://img.shields.io/badge/MIT-009900)](LICENSE)
 You should have received a copy of the [<kbd> LICENSE </kbd>](LICENSE) file with this source code.\
 This source code is licensed under the **MIT License**.
 
-</div>
-
 ## Setup dev environment
+> [!NOTE]
+> **Python 3.10+** should work with this bot. However it is recommended to use the latest **Python 3.13** version.
+
+---
+
+## Visual Studio Code extensions [<sub><sub>skip?</sub></sub>](#setting-up-a-new-project-skip)
 This bot was created, developed and meant to be used with the [**Visual Studio Code**](https://code.visualstudio.com/) IDE. I have listed the recommended extensions for this bot to be used with Visual Studio Code below.
 
-**Python 3.10+** should work for this bot. However it is recommended to use the latest **Python 3.13** version.
-
-> [!NOTE]
-> In this section, `python3` would be `python` or just `py` on **Windows** platform.
-
-### recommended Visual Studio Code extensions for this template
+### 1. recommended Visual Studio Code extensions for this template
 - autoDocstring (by Nils Werner)
 - Better Color Picker (by Jannchie)
 - Black Formatter (by Microsoft)
@@ -44,7 +45,7 @@ This bot was created, developed and meant to be used with the [**Visual Studio C
 - Python Indent (by Kevin Rose)
 - SQLite3 Editor (by yy0931)
 
-#### other extensions I use
+#### 2. other extensions I use
 - :emojisense: (by Matt Bierner)
 - AmazonQ (by Amazon Web Services)
 - Even Better TOML (by tamasfe)
@@ -53,11 +54,15 @@ This bot was created, developed and meant to be used with the [**Visual Studio C
 - Rainbow CSV (by mechatroner)
 - Remote - SSH (by Microsoft)
 
-#### customization
+#### 3. customization
 - Discord Rich Presence (by leonardssh)
 - Material Icon Theme (by Philipp Kief)
 - One Dark Pro (by binaryify) (I use this rarely)
 - Vitesse Theme (Anthony Fu) (I use this one the most)
+
+---
+
+## Setting up a new project [<sub><sub>skip?</sub></sub>](#setting-up--running-the-bot)
 
 ### clone repo
 First of all, git clone this repository:
@@ -66,22 +71,25 @@ git clone git@github.com:sqdnoises/discord.py-bot-template.git      # SSH
 git clone https://github.com/sqdnoises/discord.py-bot-template.git  # HTTPS
 ```
 
-### reinitialize git
-Then reinitialize git `.git` (optional, do this if you are starting a new project)
+### setup your repo
+Then reinitialize git `.git` (recommended to do this if you are starting a new project)
 ```bash
 rm -rf .git  # Linux
 git init
 git branch -M main
 ```
 
-#### set remote
-Set the remote aswell while you are reinitializing git for a new project.
+Set the remote for a new project.
 ```bash
 git remote add origin git@github.com:user/repo.git      # SSH
 git remote add origin https://github.com/user/repo.git  # HTTPS
 ```
 
 Make sure to replace `user` with your GitHub username and `repo` with your repository name.
+
+---
+
+## Setting up & running the bot
 
 ### create a `.env` file
 `.env` template
@@ -90,30 +98,54 @@ TOKEN="discord bot token"
 ```
 
 This file contains secret environmental variables that are not meant to be shared with anyone.
+
 The bot uses the `TOKEN` variable to login into the Discord bot.
 
-### venv (For Linux)
-On `bash`:
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
+### install uv
+[Installation instructions here](https://github.com/astral-sh/uv#installation)\
+<sub>(tl;dr: you can use `pip install uv`)</sub>
+
+### install python 3.13
+```console
+$ uv python install 3.13
+Searching for Python versions matching: Python 3.13
+Installed 1 version in 3.13s
+ + cpython-3.13.2-windows-x86_64-none
 ```
 
-### venv (For Windows, optional but highly recommended)
-On `powershell`:
-```powershell
-py -m venv .venv
-& .\.venv\Scripts\activate
+### create a venv
+```console
+$ uv venv
+Using CPython 3.13.2
+Creating virtual environment at: .venv
+Activate with: source .venv/bin/activate
 ```
+
+Run the shown venv activation command after the command is executed.
 
 ### install requirements
-```bash
-pip install -r requirements.txt
+```console
+$ uv pip install -r requirements.txt
+Resolved 44 packages in 5.11s
+Prepared 44 packages in 1m 50s
+Installed 44 packages in 81ms
+ + aiohappyeyeballs==2.6.1
+ + aiohttp==3.11.13
+...
 ```
 
 ### setup the database
-```bash
-prisma db push
+```console
+$ prisma db push
+Environment variables loaded from .env
+Prisma schema loaded from prisma\schema.prisma
+Datasource "db": SQLite database "database.db" at "file:../database/database.db"
+
+SQLite database database.db created at file:../database/database.db
+
+Your database is now in sync with your Prisma schema. Done in 57ms
+
+✔ Generated Prisma Client Python (v0.15.0) to .venv/lib/site-packages/prisma in 394ms
 ```
 
 ### setup config
@@ -136,6 +168,8 @@ For this you need to use `!sync` only once after running the bot for the first t
 
 This will synchronise all the slash commands in the code on Discord. Please restart your Discord after this step to reload all the slash command data and show the bot's slash commands when you start typing with `/`.
 
+---
+
 ## `/ping` command issues on a Linux host
 If you host the bot on linux and use the `/ping` command, you will likely see the bot think forever or produce an error and see an `Permission Error` error in the console.
 Linux uses a kernel parameter that restricts who can create ping sockets.
@@ -146,3 +180,4 @@ For troubleshooting, please refer to: [<kbd> kyan001/ping3/TROUBLESHOOTING.md </
 
 <sub>© 2023-present SqdNoises<br>
 Licensed under the MIT License.</sub>
+<div align="right"><sub><a href="#top">back to top ↑</a></sub></div>
