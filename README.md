@@ -154,19 +154,16 @@ Open [`src/config.py`](src/config.py) in the editor of your choice and edit the 
 Make sure you update `ADMINS` and `LOG_CHANNEL` to the appropriate values.
 
 ### running
+make sure your venv is activated and run:
 ```bash
-source .venv/bin/activate  # For Linux
-# OR
-& .\.venv\Scripts\activate  # For Windows (optional)
-
-python3 -m src  # py/python -m src on Windows
+python3 -m src  # py -m src/python -m src on Windows
 ```
 
 ### post-run
-Since the bot's profile has been set up for the first time, you need to tell Discord that your bot has slash commands.
-For this you need to use `!sync` only once after running the bot for the first time in the server it's in.
+Since the bot's profile has been set up for the first time, you need to tell Discord that your bot has slash commands.\
+For this you need to use `!sync` in a server the bot is in after running the bot for the first time.
 
-This will synchronise all the slash commands in the code on Discord. Please restart your Discord after this step to reload all the slash command data and show the bot's slash commands when you start typing with `/`.
+This will synchronise all the slash commands in the code on Discord. Please restart your Discord app after this step to refetch all slash commands and then it should show the bot's slash commands when you start typing with `/` in a server the bot is in or anywhere if installed as an user app.
 
 ---
 
