@@ -31,14 +31,8 @@ logs/
 # local history
 .history/
 
-# JSON files
-*.json
-
 # database related files
 database/
 *.db
 *-shm
 *-wal
-
-# uneeded metadata
-*.egg-info
