@@ -108,7 +108,7 @@ def get_matches(query: str, search_list: list[str]) -> list[str]:
 
     # Preprocess query for case-insensitive comparison
     for item in search_list:
-        if item not in matches and match(item, query):
+        if item not in matches and match(query, item):
             matches.append(item)
 
     return matches
@@ -161,7 +161,7 @@ def get_matches_by_attr(
 
     # Preprocess query for case-insensitive comparison
     for item in search_list:
-        if item not in matches and match(key(item), query):
+        if item not in matches and match(query, key(item)):
             matches.append(item)
 
     return matches
@@ -207,7 +207,7 @@ def get_identifiable_matches(
     # Preprocess query for case-insensitive comparison
     for key, value in search_dict.items():
         if value not in matches and (
-            match(key, query) or (isinstance(value, str) and match(value, query))
+            match(query, key) or (isinstance(value, str) and match(query, value))
         ):
             matches.append({key: value})
 
