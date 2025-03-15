@@ -16,7 +16,7 @@ This source code is licensed under the **MIT License**.
 </div>
 
 ## Setup dev environment
-This template was created, developed and meant to be used with the [**Visual Studio Code**](https://code.visualstudio.com/) IDE. I have listed the recommended extensions for this template to be used with Visual Studio Code below.
+This bot was created, developed and meant to be used with the [**Visual Studio Code**](https://code.visualstudio.com/) IDE. I have listed the recommended extensions for this bot to be used with Visual Studio Code below.
 
 **Python 3.10+** should work for this bot. However it is recommended to use the latest **Python 3.13** version.
 
