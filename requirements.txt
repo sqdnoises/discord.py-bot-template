@@ -3,8 +3,13 @@ numpy
 pillow
 scikit-learn
 
-# Interacting with API
+# Tools
 ping3
+aiodns
+cchardet
+orjson
+
+# Interacting with API
 aiohttp
 requests
 
