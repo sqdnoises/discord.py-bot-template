@@ -3,17 +3,12 @@ ANSI codes are a bit weird to decipher if you're unfamiliar with them, so here's
 
 It starts off with a format like `\\033[XXXm` where `XXX` is a semicolon separated list of commands
 
-The important ones here relate to colour.
-
-`30-37` are black, red, green, yellow, blue, magenta, cyan and white in that order
-
-`40-47` are the same except for the background
-
-`90-97` are the same but "bright" foreground
-
-`100-107` are the same as the bright ones but for the background.
-
-`0` means reset, `1` means bold, `2` means dim, `3` means italic, `4` means underline and `9` means strikethrough.
+The important ones here relate to colour:
+- `30-37` are black, red, green, yellow, blue, magenta, cyan and white in that order
+- `40-47` are the same except for the background
+- `90-97` are the same but "bright" foreground
+- `100-107` are the same as the bright ones but for the background.
+- `0` means reset, `1` means **bold**, `2` means 𝕕𝕚𝕞, `3` means *italic*, `4` means <u>underline</u> and `9` means ~~strikethrough~~.
 
 Another way of writing `\\033` would be `\\x1b`.
 """
