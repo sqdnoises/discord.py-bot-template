@@ -15,7 +15,7 @@ Pre-defined colors:
 - `30-37` are black, red, green, yellow, blue, magenta, cyan and white in that order
 - `40-47` are the same except for the background
 - `90-97` are the same but "bright" foreground
-- `100-107` are the same as the bright ones but for the background.
+- `100-107` are the same as the bright ones but for the background
 
 Another way of writing `\\033` would be `\\x1b`.
 """
