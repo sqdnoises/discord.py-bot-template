@@ -221,7 +221,7 @@ if __name__ == "__main__":
 
     def print_rgb_gradient(cols: int, rows: int) -> None:
         def generate_gradient(
-            c1: tuple[int, int, int], c2: tuple[int, int, int], steps: int = 50
+            c1: tuple[int, int, int], c2: tuple[int, int, int], *, steps: int = 50
         ) -> list[tuple[int, int, int]]:
             gradient: list[tuple[int, int, int]] = []
             for i in range(steps):
