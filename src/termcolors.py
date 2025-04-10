@@ -244,7 +244,7 @@ if __name__ == "__main__":
         ]
 
         # Create one continuous diagonal gradient
-        big_gradient = []
+        big_gradient: list[tuple[int, int, int]] = []
         for i in range(len(colors) - 1):
             segment = generate_gradient(colors[i], colors[i + 1])
             if i < len(colors) - 2:
