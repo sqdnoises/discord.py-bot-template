@@ -42,14 +42,6 @@ DEBUG = True
 NOTIFY_ALL_ERRORS_TO_USER = True
 LOG_CHANNEL = 1318631693929680896
 
-# SAVE_CUSTOM_LOGS      - Whether to save the logs produced by the custom logger.
-# SAVE_DISCORD_LOGS     - Whether to save the logs produced by the discord.py logger.
-# LOGGER_FLUSH_ON_PRINT - Save file contents as logger prints.
-# Save path: ./logs/<bot name> <time>.log
-SAVE_CUSTOM_LOGS = True
-SAVE_DISCORD_LOGS = True
-LOGGER_FLUSH_ON_PRINT = True
-
 # LOG_COMMANDS_TO_CONSOLE           - Log every text and slash command being used by a user to
 #                                     console.
 # LOG_NOT_FOUND_COMMANDS_TO_CONSOLE - Log every text command that users try to use but do not
@@ -78,10 +70,10 @@ COMMAND_NOT_FOUND_MESSAGE = "Command `{ctx.clean_prefix}{command}` not found."
 # ITEMS_PER_PAGE - The amount of items to show in any sort of command with multiple pages.
 ITEMS_PER_PAGE = 5
 
-# LOGGER_TIME_FORMAT        - Time format in to show in the logger.
-# LOG_FILE_NAME_TIME_FORMAT - Time format to save files in.
-LOGGER_TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
-LOG_FILE_NAME_TIME_FORMAT = "%Y-%m-%d %H-%M-%S"
+# LOGS_FOLDER          - The folder to store logs in.
+# LOG_FILE_NAME_FORMAT - Filename with a time format to save files in.
+LOGS_FOLDER = "./logs"
+LOG_FILE_NAME_FORMAT = "%Y-%m-%d %H-%M-%S.log"
 
 # COGS_EXCLUDE - Comma seperated list of cogs to exclude on runtime.
 # Example: ["developer", "test"]

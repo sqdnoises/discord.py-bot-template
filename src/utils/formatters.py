@@ -1,7 +1,3 @@
-"""
-All useful formatters.
-"""
-
 from typing import Literal
 
 __all__ = (

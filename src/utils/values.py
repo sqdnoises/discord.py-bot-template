@@ -1,7 +1,3 @@
-"""
-Values-related utilities.
-"""
-
 __all__ = ("clamp",)
 
 

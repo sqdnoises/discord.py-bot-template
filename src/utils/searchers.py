@@ -1,7 +1,3 @@
-"""
-Search-related utilities.
-"""
-
 import string
 from typing import TypeVar, Callable
 

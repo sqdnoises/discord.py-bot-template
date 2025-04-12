@@ -1,7 +1,3 @@
-"""
-Module-related utilities.
-"""
-
 import pkgutil
 from typing import Any
 

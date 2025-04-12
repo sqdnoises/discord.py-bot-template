@@ -15,12 +15,14 @@ from contextlib import redirect_stdout, redirect_stderr
 from .. import utils
 from .. import checks
 from .. import config
-from ..logger import logging
+from ..utils import get_logger
 from ..classes import Bot, Cog, Context
 
 import discord
 from discord import app_commands
 from discord.ext import commands
+
+logger = get_logger()
 
 
 class Developer(Cog):
@@ -35,23 +37,23 @@ class Developer(Cog):
     async def load(self, ctx: Context, cog: str) -> None:
         """Load a cog"""
         ext = "cogs." + cog
-        logging.warning(
+        logger.warning(
             f"{ctx.author.display_name} (@{ctx.author}, {ctx.author.id}) wants to load `{ext}`"
         )
         await self.bot.load_extension(ext)
         await ctx.send(f"✅ Loaded the extension: `{ext}`")
-        logging.info(f"successfully loaded `{ext}`")
+        logger.info(f"successfully loaded `{ext}`")
 
     @commands.command(aliases=["unload-extension"])
     async def unload(self, ctx: Context, cog: str) -> None:
         """Unload a cog"""
         ext = "cogs." + cog
-        logging.warning(
+        logger.warning(
             f"{ctx.author.display_name} (@{ctx.author}, {ctx.author.id}) wants to unload `{ext}`"
         )
         await self.bot.unload_extension(ext)
         await ctx.send(f"✅ Unloaded the extension: `{ext}`")
-        logging.info(f"successfully unloaded `{ext}`")
+        logger.info(f"successfully unloaded `{ext}`")
 
     @commands.command(
         aliases=["r", "re", "reload-all", "reload-extension", "reload-all-extensions"]
@@ -62,7 +64,7 @@ class Developer(Cog):
             extensions = [k for k in self.bot.extensions.keys()]
 
             msg = await ctx.send("🔨 Reloading all extensions...")
-            logging.warning(
+            logger.warning(
                 f"{ctx.author.display_name} (@{ctx.author}, {ctx.author.id}) wants to reload all extensions"
             )
 
@@ -70,7 +72,7 @@ class Developer(Cog):
             extensions = ["cogs." + cog for cog in cogs]
 
             msg = await ctx.send(f"🔨 Reloading: `{'`, `'.join(extensions)}`")
-            logging.warning(
+            logger.warning(
                 f"{ctx.author.display_name} (@{ctx.author}, {ctx.author.id}) wants to reload `{'`, `'.join(extensions)}`"
             )
 
@@ -81,12 +83,12 @@ class Developer(Cog):
 
             except Exception as e:
                 t = f"failed to reload `{ext}`: `{e.__class__.__name__}`"
-                logging.error(t, exc_info=e)
+                logger.error(t, exc_info=e)
                 ext_status += "❌ " + t[0].upper() + t[1:] + "\n"
 
             else:
                 t = f"successfully reloaded `{ext}`"
-                logging.info(t)
+                logger.info(t)
                 ext_status += "✅ " + t.capitalize() + "\n"
 
         await msg.edit(content=ext_status)
@@ -116,7 +118,7 @@ class Developer(Cog):
 
             if ctx.command and len(ctx.args) > 2:
                 ext = "cogs." + ctx.args[2]
-                logging.error(
+                logger.error(
                     f"failed to {ctx.command.name} `{ext}`: `{error.__class__.__name__}`",
                     exc_info=error,
                 )
@@ -134,34 +136,34 @@ class Developer(Cog):
     @commands.command()
     async def restart(self, ctx: Context) -> None:
         """Restart the bot"""
-        logging.warning(
+        logger.warning(
             f"{ctx.author.display_name} (@{ctx.author}, id: {ctx.author.id}) is restarting the bot"
         )
 
         if self.bot.log_channel is not None:
-            logging.warning("informing logs channel")
+            logger.warning("informing logs channel")
             try:
                 await self.bot.log_channel.send(
                     f"**{ctx.author.display_name}** is restarting the bot\n"
                     f"-# {ctx.author.name} ({ctx.author.id})"
                 )
             except Exception as e:
-                logging.error(
+                logger.error(
                     "couldn't inform logs channel, ignoring and restarting", exc_info=e
                 )
         else:
-            logging.warning(
+            logger.warning(
                 "log_channel is not set, restarting without informing logs channel..."
             )
 
         try:
             await ctx.react("🫠")
         except Exception as e:
-            logging.error(
+            logger.error(
                 "couldn't react to message, ignoring and restarting", exc_info=e
             )
 
-        logging.warning(
+        logger.warning(
             "closing bot and replacing current process with a new one by running:\n"
             f"`{' '.join([sys.executable] + sys.argv)}` in os.execv()"
         )
@@ -171,36 +173,36 @@ class Developer(Cog):
     @commands.command()
     async def shutdown(self, ctx: Context) -> None:
         """Shutdown the bot"""
-        logging.warning(
+        logger.warning(
             f"{ctx.author.display_name} (@{ctx.author}, id: {ctx.author.id}) is shutting down the bot"
         )
 
         if self.bot.log_channel is not None:
-            logging.warning("informing logs channel")
+            logger.warning("informing logs channel")
             try:
                 await self.bot.log_channel.send(
                     f"**{ctx.author.display_name}** is shutting down the bot\n"
                     f"-# {ctx.author.name} ({ctx.author.id})"
                 )
             except Exception as e:
-                logging.error(
+                logger.error(
                     "couldn't inform logs channel, ignoring and shutting down",
                     exc_info=e,
                 )
 
         else:
-            logging.warning(
+            logger.warning(
                 "log_channel is not set, shutting down without informing logs channel..."
             )
 
         try:
             await ctx.react("🫀")
         except Exception as e:
-            logging.error(
+            logger.error(
                 "couldn't react to message, ignoring and shutting down", exc_info=e
             )
 
-        logging.warning("shutting down")
+        logger.warning("shutting down")
         await self.bot.close()
 
     @commands.command(name="generate-invite", aliases=["invite"])
@@ -236,7 +238,7 @@ class Developer(Cog):
         """Execute async code"""
         bot = self.bot
 
-        logging.warn(
+        logger.warn(
             f"{ctx.clean_prefix}exec called by {ctx.author.display_name} (@{ctx.author.name}, id: {ctx.author.id})"
         )
 
@@ -322,7 +324,7 @@ class Developer(Cog):
                 )
 
                 self._last_result = e
-                logging.error(
+                logger.error(
                     f"failed at `exec()` ({ctx.clean_prefix}exec by {ctx.author.display_name} (@{ctx.author.name}, id: {ctx.author.id}))",
                     exc_info=e,
                 )
@@ -331,7 +333,7 @@ class Developer(Cog):
                 except Exception as e:
                     error = utils.error(e, include_module=True)
                     await ctx.send(f"An error occurred.\n" f"{error}")
-                    logging.error(
+                    logger.error(
                         "error occurred while sending exec() failed embed", exc_info=e
                     )
 
@@ -398,11 +400,11 @@ class Developer(Cog):
 
                 output = f"{output}\n" f"Time taken: {time_text}"
 
-                logging.error(
+                logger.error(
                     f"EXECUTION FAILED! output of `exec` {ctx.clean_prefix}exec called by {ctx.author.display_name} (@{ctx.author.name}, id: {ctx.author.id})\n"
                     f"{output}"
                 )
-                logging.error(
+                logger.error(
                     f"execution failed ({ctx.clean_prefix}exec by {ctx.author.display_name} (@{ctx.author.name}, id: {ctx.author.id}))",
                     exc_info=e,
                 )
@@ -414,7 +416,7 @@ class Developer(Cog):
                 except Exception as e:
                     error = utils.error(e)
                     await ctx.send(f"An error occurred.\n" f"{error}")
-                    logging.error(
+                    logger.error(
                         "error occurred while sending execution failed embed",
                         exc_info=e,
                     )
@@ -481,7 +483,7 @@ class Developer(Cog):
                     f"Time taken: {time_text}"
                 )
 
-                logging.info(
+                logger.info(
                     f"execution successful; output of `exec` {ctx.clean_prefix}exec called by {ctx.author.display_name} (@{ctx.author.name}, id: {ctx.author.id})\n"
                     f"{output}"
                 )
@@ -494,7 +496,7 @@ class Developer(Cog):
                 except Exception as e:
                     error = utils.error(e)
                     await ctx.send(f"An error occurred.\n" f"{error}")
-                    logging.error(
+                    logger.error(
                         "error occurred while sending exec successful embed", exc_info=e
                     )
 

@@ -1,7 +1,3 @@
-"""
-Color-related utilities.
-"""
-
 import re
 
 __all__ = (

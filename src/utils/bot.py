@@ -1,7 +1,3 @@
-"""
-Bot-related utilities.
-"""
-
 import asyncio
 from typing import Sequence, Awaitable, TypeVar, TYPE_CHECKING
 

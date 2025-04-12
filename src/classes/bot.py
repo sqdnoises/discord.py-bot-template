@@ -1,14 +1,13 @@
 import sys
-import logging as logg
+import logging
 import pkg_resources
 from typing import TYPE_CHECKING, Optional
 from datetime import datetime
 
 from .. import cogs
 from .. import utils
-from .. import config
-from ..utils import mprint
-from ..logger import logging
+from ..config import BOT_NAME, DATABASE_LOCATION, LOG_CHANNEL, COGS_EXCLUDE
+from ..utils import get_logger, mprint
 from ..termcolors import *
 from ..termcolors import rgb
 
@@ -25,6 +24,8 @@ from discord import app_commands
 from discord.ext import commands
 
 __all__ = ("Bot",)
+
+logger = get_logger()
 
 
 class Bot(commands.Bot):
@@ -54,24 +55,24 @@ class Bot(commands.Bot):
         self.uptime = None
         self.prisma = Prisma(auto_register=True)
 
-        self.log_channel_id = config.LOG_CHANNEL
+        self.log_channel_id = LOG_CHANNEL
         self.log_channel = None
 
     async def connect_db(self) -> None:
         if self.prisma.is_connected():
-            logging.warn("tried to connect to database while already connected")
+            logger.warn("tried to connect to database while already connected")
             return
 
         await self.prisma.connect()
-        logging.info(f"connected to database {config.DATABASE_LOCATION}")
+        logger.info(f"connected to database {DATABASE_LOCATION}")
 
     async def disconnect_db(self) -> None:
         if not self.prisma.is_connected():
-            logging.warn("tried to disconnect from database while already disconnected")
+            logger.warn("tried to disconnect from database while already disconnected")
             return
 
         await self.prisma.disconnect()
-        logging.info("disconnected from database")
+        logger.info("disconnected from database")
 
     async def enable_wal_mode(self) -> None:
         try:
@@ -84,7 +85,7 @@ class Bot(commands.Bot):
         loaded = []
         excluded = []
 
-        exclude = config.COGS_EXCLUDE
+        exclude = COGS_EXCLUDE
         for module in utils.list_modules(cogs):
             module_imported = utils.import_submodule(module)
 
@@ -107,7 +108,7 @@ class Bot(commands.Bot):
                 await self.load_extension(module)
 
             except commands.NoEntryPointError:
-                logging.warn(
+                logger.warn(
                     f"excluding `{module}` because there is no entry point (no 'setup' function found)"
                 )
                 excluded.append(
@@ -115,7 +116,7 @@ class Bot(commands.Bot):
                 )
 
             except Exception as e:
-                logging.critical(
+                logger.critical(
                     f"excluding `{module}` because there was an error while loading it (this may cause unintended behaviour)",
                     exc_info=e,
                 )
@@ -128,7 +129,7 @@ class Bot(commands.Bot):
 
         loaded_paginated = utils.paginate(loaded, 3)
         excluded_paginated = utils.paginate(excluded, 2)
-        prefix_length = len(utils.strip_color(logging._prefix_handler("info")))
+        prefix_length = 29 + len(BOT_NAME)
 
         loaded_str = f"the following cogs have been {underline}loaded{reset}:\n"
         for x in loaded_paginated:
@@ -138,22 +139,22 @@ class Bot(commands.Bot):
         for x in excluded_paginated:
             excluded_str += (" " * prefix_length) + f"{', '.join(x)}\n"
 
-        logging.info(loaded_str.strip())
-        logging.info(excluded_str.strip())
+        logger.info(loaded_str.strip())
+        logger.info(excluded_str.strip())
 
-        logging.info(f"commands loaded: {len(self.commands)}")
+        logger.info(f"commands loaded: {len(self.commands)}")
 
     async def _setup_log_channel(self) -> None:
         if self.log_channel_id is None:
-            logging.warn("log channel not set because log channel id was not set")
+            logger.warn("log channel not set because log channel id was not set")
             self.log_channel = None
             return
 
-        logging.info(f"getting log channel with id {self.log_channel_id}")
+        logger.info(f"getting log channel with id {self.log_channel_id}")
         try:
             channel = await self.fetch_channel(self.log_channel_id)
         except Exception as e:
-            logging.critical(
+            logger.critical(
                 f"could not get log channel with id {self.log_channel_id} due to exception:",
                 exc_info=e,
             )
@@ -162,16 +163,16 @@ class Bot(commands.Bot):
         if isinstance(channel, discord.TextChannel):
             self.log_channel = channel
         else:
-            logging.critical(
+            logger.critical(
                 f"log channel with id {self.log_channel_id} is not a text channel, log_channel not set"
             )
 
         if not self.log_channel:
-            logging.critical(
+            logger.critical(
                 f"log channel with id {self.log_channel_id} not found. this can cause problems."
             )
         else:
-            logging.info(
+            logger.info(
                 f"log channel: #{self.log_channel.name} (id: {self.log_channel.id})"
             )
 
@@ -182,7 +183,7 @@ class Bot(commands.Bot):
 
         mprint()
         mprint(
-            f"{white}~{reset} {bold}{green}{config.BOT_NAME.upper()}{reset} {white}~{reset}"
+            f"{white}~{reset} {bold}{green}{BOT_NAME.upper()}{reset} {white}~{reset}"
         )
         mprint(
             f"{bright_green}running on{reset} {yellow}python{reset} {blue}{sys.version.split()[0]}{reset}; {yellow}discord.py{reset} {blue}{pkg_resources.get_distribution('discord.py').version}{reset}"
@@ -193,11 +194,11 @@ class Bot(commands.Bot):
         await self._load_all_cogs()
 
         await self.tree.update_app_commands()
-        logging.info(f"app commands loaded: {len(self.tree.all_app_commands)}")
+        logger.info(f"app commands loaded: {len(self.tree.all_app_commands)}")
 
-        logging.info("logged in successfully")
-        logging.info(f"user: {self.user} ({self.user.id})")
-        logging.info(
+        logger.info("logged in successfully")
+        logger.info(f"user: {self.user} ({self.user.id})")
+        logger.info(
             f"invite: https://discord.com/oauth2/authorize?client_id={self.user.id}&permissions=8&scope=bot+applications.commands"
         )
 
@@ -209,7 +210,7 @@ class Bot(commands.Bot):
                     f"**{self.user.name}** logged in successfully", silent=True
                 )
         except Exception as e:
-            logging.critical(
+            logger.critical(
                 f"could not send log message to log channel with id {self.log_channel_id} due to exception:",
                 exc_info=e,
             )
@@ -227,11 +228,10 @@ class Bot(commands.Bot):
         sys.stderr.flush()
 
         # Shutdown loggers
-        logging.critical(
+        logger.critical(
             "bot process exited" if not abandon else "bot process exited (abandoned)"
         )
-        logg.shutdown()
-        logging.close()
+        logging.shutdown()
 
         if abandon:
             print()

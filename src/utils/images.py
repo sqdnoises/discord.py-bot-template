@@ -1,7 +1,3 @@
-"""
-Image-related utilities.
-"""
-
 from io import BytesIO
 from typing import TYPE_CHECKING, Optional
 

@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from ..logger import logging
+from ..utils import get_logger
 
 if TYPE_CHECKING:
     from .bot import Bot
@@ -11,6 +11,8 @@ from discord.abc import Snowflake
 from discord.ext import commands
 
 __all__ = ("CommandTree",)
+
+logger = get_logger()
 
 
 class CommandTree(app_commands.CommandTree):
@@ -33,20 +35,20 @@ class CommandTree(app_commands.CommandTree):
     async def sync(
         self, *, guild: Snowflake | None = None
     ) -> list[app_commands.AppCommand]:
-        logging.debug("syncing app commands...")
+        logger.debug("syncing app commands...")
         cmds = await super().sync(guild=guild)
         self._update_app_commands(cmds)
-        logging.debug(
+        logger.debug(
             f"app commands synced & app commands list updated locally ({len(cmds)})"
         )
         return cmds
 
     async def update_app_commands(self) -> list[app_commands.AppCommand]:
         """Update local app commands list"""
-        logging.debug("fetching app commands...")
+        logger.debug("fetching app commands...")
         cmds = await self.fetch_commands()
         self._update_app_commands(cmds)
-        logging.debug(
+        logger.debug(
             f"app commands fetched & updated locally ({len(self.all_app_commands)})"
         )
         return cmds

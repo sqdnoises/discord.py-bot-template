@@ -1,8 +1,6 @@
-import traceback
-
 from .. import utils
 from .. import config
-from ..logger import logging
+from ..utils import get_logger
 from ..classes import Bot, Cog, Context
 
 import aiohttp
@@ -11,6 +9,8 @@ import requests
 import discord
 from discord import app_commands
 from discord.ext import commands, tasks
+
+logger = get_logger()
 
 
 class Events(Cog):
@@ -36,10 +36,10 @@ class Events(Cog):
 
     @commands.Cog.listener()
     async def on_ready(self) -> None:
-        logging.info(
+        logger.info(
             f"serving {len(self.bot.guilds)} guilds and {len(self.bot.users)} users"
         )
-        logging.info("ready to handle commands")
+        logger.info("ready to handle commands")
 
     @commands.Cog.listener()
     async def on_command_error(
@@ -105,7 +105,7 @@ class Events(Cog):
 
         elif isinstance(exception, commands.CommandNotFound):
             if config.LOG_NOT_FOUND_COMMANDS_TO_CONSOLE:
-                logging.error(
+                logger.error(
                     f"{ctx.author.display_name} (@{ctx.author.name}, id: {ctx.author.id}) used {ctx.message.content} but command `{ctx.message.content[len(ctx.prefix or ""):].split()[0]}` doesn't exist!"
                 )
 
@@ -134,7 +134,7 @@ class Events(Cog):
             and interaction.command
             and interaction.type == discord.InteractionType.application_command
         ):
-            logging.info(
+            logger.info(
                 f"{interaction.user.display_name} (@{interaction.user.name}, id: {interaction.user.id}) used /{interaction.command.qualified_name} "
                 f"in channel: #{interaction.channel} ({interaction.channel.id if interaction.channel else None}) in guild: {interaction.guild} ({interaction.guild.id if interaction.guild else None})"
             )
@@ -163,11 +163,7 @@ class Events(Cog):
             return
 
         def print_error(e: Exception) -> None:
-            logging.debug("Failed to notify error to user.", do_save=False)
-            logging.debug(
-                f"Failed to notify error to user.\n{''.join(traceback.format_exception(e))}",
-                do_print=False,
-            )
+            logger.debug("Failed to notify error to user.", exc_info=e)
 
         try:
             await message.reply(embed=embed)
@@ -192,12 +188,12 @@ class Events(Cog):
             if interaction.command._has_any_error_handlers():
                 return
 
-            logging.error(
+            logger.error(
                 f"Ignoring exception in command {interaction.command.name}",
                 exc_info=error,
             )
         else:
-            logging.error("Ignoring exception in command tree", exc_info=error)
+            logger.error("Ignoring exception in command tree", exc_info=error)
 
         if isinstance(error, app_commands.CommandInvokeError):
             e = error.original
@@ -226,11 +222,7 @@ class Events(Cog):
             return
 
         def print_error(e: Exception) -> None:
-            logging.debug("Failed to notify error to user.", do_save=False)
-            logging.debug(
-                f"Failed to notify error to user.\n{''.join(traceback.format_exception(e))}",
-                do_print=False,
-            )
+            logger.debug("Failed to notify error to user.", exc_info=e)
 
         try:
             await interaction.response.send_message(embed=embed)

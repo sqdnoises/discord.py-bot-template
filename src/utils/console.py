@@ -1,7 +1,3 @@
-"""
-Console-related utilities.
-"""
-
 import os
 import sys
 import socket
@@ -9,7 +5,7 @@ import platform
 import pkg_resources
 
 from .colors import strip_color
-from ..logger import logging
+from .logger import get_logger
 
 __all__ = (
     "mprint",
@@ -18,6 +14,8 @@ __all__ = (
     "get_user_and_host",
     "detect_platform",
 )
+
+logger = get_logger()
 
 
 def mprint(text: str = "", fillchar: str = " ", end: str = "\n", flush: bool = False):
@@ -40,17 +38,17 @@ def mprint(text: str = "", fillchar: str = " ", end: str = "\n", flush: bool = F
 
 
 def print_versions():
-    logging.info(f"python {sys.version}")
-    logging.info(f"discord.py {pkg_resources.get_distribution('discord.py').version}")
+    logger.info(f"python {sys.version}")
+    logger.info(f"discord.py {pkg_resources.get_distribution('discord.py').version}")
 
 
 def print_terminal_size():
     try:
         terminal = os.get_terminal_size()
     except:
-        logging.warn("could not detect terminal size")
+        logger.warn("could not detect terminal size")
     else:
-        logging.info(
+        logger.info(
             f"detected current terminal size: {terminal.columns}x{terminal.lines}"
         )
 

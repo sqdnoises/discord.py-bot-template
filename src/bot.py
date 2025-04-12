@@ -26,46 +26,64 @@ if __name__ == "__main__":
     )
     os._exit(1)
 
-import logging as logg
+import logging
 from datetime import datetime
 
-from . import config
-from .utils import get_prefix, print_terminal_size, print_versions
-from .logger import logging
+from .config import (
+    BOT_NAME,
+    ADMINS,
+    DEBUG,
+    LOGS_FOLDER,
+    LOG_FILE_NAME_FORMAT,
+)
+from .utils import (
+    get_logger,
+    setup_logging,
+    get_prefix,
+    print_terminal_size,
+    print_versions,
+)
 from .classes import Bot
 from .termcolors import *
 
 import discord
 from dotenv import load_dotenv
 
-logging.info("initialising")
+setup_logging(level=logging.DEBUG if DEBUG else None)
+discord.utils.setup_logging(root=False)
 
-if config.SAVE_DISCORD_LOGS:
-    os.makedirs(logging.logs_folder or "logs", exist_ok=True)
-    filepath = logging.log_file or os.path.join(
-        logging.logs_folder or "logs",
-        f"{logging.name} {datetime.now().strftime(config.LOG_FILE_NAME_TIME_FORMAT)}.log",
-    )
-    discord.utils.setup_logging(
-        handler=logg.FileHandler(filepath),
-        formatter=logg.Formatter(
-            "{asctime} {levelname:<8} {name} > {message}",
-            config.LOGGER_TIME_FORMAT,
-            style="{",
-        ),
-        root=False,
-    )
-    logging.debug("discord.py file handler set up")
+logger = get_logger()
+logger.info("initialising")
 
-if config.DEBUG:
-    logging.log_level = 5
-    logging.debug("Houston, we have a code GRAY (DEBUG)")
-    logging.debug("debug mode enabled")
+if DEBUG:
+    logger.debug("Houston, we have a code GRAY (DEBUG)")
+    logger.debug("debug mode enabled")
+
+if LOGS_FOLDER:
+    os.makedirs(LOGS_FOLDER, exist_ok=True)
+    filepath = os.path.join(
+        LOGS_FOLDER,
+        f"{BOT_NAME} {datetime.now().strftime(LOG_FILE_NAME_FORMAT)}.log",
+    )
+
+    log_file_formatter = logging.Formatter(
+        "{asctime} {levelname:<8} {name} > {message}", "%Y-%m-%d %H:%M:%S", style="{"
+    )
+
+    log_file_handler = logging.FileHandler(filepath)
+    log_file_handler.setFormatter(log_file_formatter)
+    log_file_handler.setLevel(logging.DEBUG)
+
+    logger.addHandler(log_file_handler)
+    logger.debug(f"{BOT_NAME} file handler set up")
+
+    logging.getLogger("discord").addHandler(log_file_handler)
+    logger.debug("discord.py file handler set up")
 
 print_versions()
 
 load_dotenv()
-logging.info("loaded environment variables")
+logger.info("loaded environment variables")
 
 bot = Bot(
     command_prefix=get_prefix,
@@ -81,10 +99,10 @@ print_terminal_size()
 
 def start(*args, **kwargs):
     """Start the bot"""
-    logging.info(f"starting {config.BOT_NAME}")
+    logger.info(f"starting {BOT_NAME}")
 
-    if not config.ADMINS:
-        logging.critical(
+    if not ADMINS:
+        logger.critical(
             "no admins found in the config file, please add atleast one user ID"
         )
         return
@@ -94,6 +112,6 @@ def start(*args, **kwargs):
     if token:
         bot.run(token, *args, **kwargs)
     else:
-        logging.critical(
+        logger.critical(
             "environment variable 'TOKEN' not found. are you sure you have setup your `.env` file correctly?"
         )

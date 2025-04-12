@@ -1,7 +1,3 @@
-"""
-Iterables-related utilities.
-"""
-
 from typing import Any, Iterable, Callable, TypeVar
 from itertools import islice
 
