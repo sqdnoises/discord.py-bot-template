@@ -34,7 +34,7 @@ from .config import (
     ADMINS,
     DEBUG,
     LOGS_FOLDER,
-    LOG_FILE_NAME_FORMAT,
+    LOG_FILENAME_TIME_FORMAT,
 )
 from .utils import (
     get_logger,
@@ -63,7 +63,7 @@ if LOGS_FOLDER:
     os.makedirs(LOGS_FOLDER, exist_ok=True)
     filepath = os.path.join(
         LOGS_FOLDER,
-        f"{BOT_NAME} {datetime.now().strftime(LOG_FILE_NAME_FORMAT)}.log",
+        f"{BOT_NAME} {datetime.now().strftime(LOG_FILENAME_TIME_FORMAT)}.log",
     )
 
     log_file_formatter = logging.Formatter(

@@ -70,10 +70,10 @@ COMMAND_NOT_FOUND_MESSAGE = "Command `{ctx.clean_prefix}{command}` not found."
 # ITEMS_PER_PAGE - The amount of items to show in any sort of command with multiple pages.
 ITEMS_PER_PAGE = 5
 
-# LOGS_FOLDER          - The folder to store logs in.
-# LOG_FILE_NAME_FORMAT - Filename with a time format to save files in.
+# LOGS_FOLDER               - The folder to store logs in.
+# LOG_FILE_NAME_TIME_FORMAT - Time format for the log filename.
 LOGS_FOLDER = "./logs"
-LOG_FILE_NAME_FORMAT = "%Y-%m-%d %H-%M-%S.log"
+LOG_FILENAME_TIME_FORMAT = "%Y-%m-%d %H-%M-%S.log"
 
 # COGS_EXCLUDE - Comma seperated list of cogs to exclude on runtime.
 # Example: ["developer", "test"]
