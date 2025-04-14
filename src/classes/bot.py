@@ -130,7 +130,7 @@ class Bot(commands.Bot):
 
         loaded_paginated = utils.paginate(loaded, 3)
         excluded_paginated = utils.paginate(excluded, 2)
-        prefix_length = 29 + len(BOT_NAME)
+        prefix_length = 30 + len(BOT_NAME)
 
         loaded_str = f"the following cogs have been {underline}loaded{reset}:\n"
         for x in loaded_paginated:
