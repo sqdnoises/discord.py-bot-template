@@ -9,7 +9,6 @@ from .. import utils
 from ..config import BOT_NAME, DATABASE_LOCATION, LOG_CHANNEL, COGS_EXCLUDE
 from ..utils import get_logger, mprint
 from ..termcolors import *
-from ..termcolors import rgb
 
 from .context import Context
 from .command_tree import CommandTree
