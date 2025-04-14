@@ -61,7 +61,7 @@ if DEBUG:
 
 if LOGS_FOLDER:
     os.makedirs(LOGS_FOLDER, exist_ok=True)
-    filepath = os.path.join(
+    filename = os.path.join(
         LOGS_FOLDER,
         f"{BOT_NAME} {datetime.now().strftime(LOG_FILENAME_TIME_FORMAT)}.log",
     )
@@ -70,7 +70,7 @@ if LOGS_FOLDER:
         "{asctime} {levelname:<8} {name} > {message}", "%Y-%m-%d %H:%M:%S", style="{"
     )
 
-    log_file_handler = logging.FileHandler(filepath)
+    log_file_handler = logging.FileHandler(filename=filename, encoding="utf-8")
     log_file_handler.setFormatter(log_file_formatter)
     log_file_handler.setLevel(logging.DEBUG)
 
@@ -110,7 +110,7 @@ def start(*args, **kwargs):
     token = os.getenv("TOKEN")
 
     if token:
-        bot.run(token, *args, **kwargs)
+        bot.run(token, log_handler=None, *args, **kwargs)
     else:
         logger.critical(
             "environment variable 'TOKEN' not found. are you sure you have setup your `.env` file correctly?"

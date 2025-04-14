@@ -59,7 +59,7 @@ class Bot(commands.Bot):
 
     async def connect_db(self) -> None:
         if self.prisma.is_connected():
-            logger.warn("tried to connect to database while already connected")
+            logger.warning("tried to connect to database while already connected")
             return
 
         await self.prisma.connect()
@@ -67,7 +67,9 @@ class Bot(commands.Bot):
 
     async def disconnect_db(self) -> None:
         if not self.prisma.is_connected():
-            logger.warn("tried to disconnect from database while already disconnected")
+            logger.warning(
+                "tried to disconnect from database while already disconnected"
+            )
             return
 
         await self.prisma.disconnect()
@@ -107,7 +109,7 @@ class Bot(commands.Bot):
                 await self.load_extension(module)
 
             except commands.NoEntryPointError:
-                logger.warn(
+                logger.warning(
                     f"excluding `{module}` because there is no entry point (no 'setup' function found)"
                 )
                 excluded.append(
@@ -145,26 +147,27 @@ class Bot(commands.Bot):
 
     async def _setup_log_channel(self) -> None:
         if self.log_channel_id is None:
-            logger.warn("log channel not set because log channel id was not set")
+            logger.warning("log channel not set because log channel id was not set")
             self.log_channel = None
             return
 
         logger.info(f"getting log channel with id {self.log_channel_id}")
         try:
             channel = await self.fetch_channel(self.log_channel_id)
+
         except Exception as e:
             logger.critical(
                 f"could not get log channel with id {self.log_channel_id} due to exception:",
                 exc_info=e,
             )
-            return
 
-        if isinstance(channel, discord.TextChannel):
-            self.log_channel = channel
         else:
-            logger.critical(
-                f"log channel with id {self.log_channel_id} is not a text channel, log_channel not set"
-            )
+            if isinstance(channel, discord.TextChannel):
+                self.log_channel = channel
+            else:
+                logger.critical(
+                    f"log channel with id {self.log_channel_id} is not a text channel, log_channel not set"
+                )
 
         if not self.log_channel:
             logger.critical(

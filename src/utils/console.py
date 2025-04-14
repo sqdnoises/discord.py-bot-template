@@ -46,7 +46,7 @@ def print_terminal_size():
     try:
         terminal = os.get_terminal_size()
     except:
-        logger.warn("could not detect terminal size")
+        logger.warning("could not detect terminal size")
     else:
         logger.info(
             f"detected current terminal size: {terminal.columns}x{terminal.lines}"

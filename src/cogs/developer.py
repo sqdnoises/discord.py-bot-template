@@ -238,7 +238,7 @@ class Developer(Cog):
         """Execute async code"""
         bot = self.bot
 
-        logger.warn(
+        logger.warning(
             f"{ctx.clean_prefix}exec called by {ctx.author.display_name} (@{ctx.author.name}, id: {ctx.author.id})"
         )
 
