@@ -6,7 +6,7 @@ from datetime import datetime
 
 from .. import cogs
 from .. import utils
-from ..config import BOT_NAME, DATABASE_LOCATION, LOG_CHANNEL, COGS_EXCLUDE
+from ..config import BOT_NAME, LOG_CHANNEL, COGS_EXCLUDE
 from ..utils import get_logger, mprint
 from ..termcolors import *
 
@@ -63,7 +63,7 @@ class Bot(commands.Bot):
             return
 
         await self.prisma.connect()
-        logger.info(f"connected to database {DATABASE_LOCATION}")
+        logger.info("connected to database")
 
     async def disconnect_db(self) -> None:
         if not self.prisma.is_connected():
