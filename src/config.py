@@ -15,9 +15,7 @@
 ##################################
 
 # BOT_NAME               - The bot name, only used to show in logs.
-# DATABASE_LOCATION      - The location of the database file, only used to show in logs.
 BOT_NAME = "template bot"
-DATABASE_LOCATION = "./database/database.db"
 
 # DEFAULT_PREFIX         - This can be the default prefix the bot will assign to a server when it
 #                          detects its in a new server.
@@ -73,7 +71,7 @@ ITEMS_PER_PAGE = 5
 # LOGS_FOLDER               - The folder to store logs in.
 # LOG_FILE_NAME_TIME_FORMAT - Time format for the log filename.
 LOGS_FOLDER = "./logs"
-LOG_FILENAME_TIME_FORMAT = "%Y-%m-%d %H-%M-%S.log"
+LOG_FILENAME_TIME_FORMAT = "%Y-%m-%d %H-%M-%S"
 
 # COGS_EXCLUDE - Comma seperated list of cogs to exclude on runtime.
 # Example: ["developer", "test"]
