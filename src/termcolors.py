@@ -62,11 +62,9 @@ __all__ = (
     "bg_rgb",
     "bg_hex",
     # Custom Predefined Colors
-    "lime",
     "orange",
     "dark_orange",
     # Custom Background Colors
-    "bg_lime",
     "bg_orange",
     "bg_dark_orange",
     # Colors
@@ -134,11 +132,9 @@ def bg_hex(hex: int) -> str:
     return bg_rgb(r, g, b)
 
 
-lime = rgb(0, 255, 128)
 orange = rgb(255, 128, 0)
 dark_orange = rgb(128, 64, 0)
 
-bg_lime = bg_rgb(0, 255, 128)
 bg_orange = bg_rgb(255, 128, 0)
 bg_dark_orange = bg_rgb(128, 64, 0)
 
