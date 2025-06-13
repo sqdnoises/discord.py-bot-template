@@ -1,3 +1,4 @@
+import os
 import sys
 import logging
 import pkg_resources
@@ -7,7 +8,7 @@ from datetime import datetime
 from .. import cogs
 from .. import utils
 from ..config import BOT_NAME, LOG_CHANNEL, COGS_EXCLUDE
-from ..utils import get_logger, mprint
+from ..utils import get_logger, mprint, get_user_and_host
 from ..termcolors import *
 
 from .context import Context
@@ -16,6 +17,7 @@ from .command_tree import CommandTree
 if TYPE_CHECKING:
     from .custom_types import ContextT_co, PrefixType
 
+import aiohttp
 from prisma import Prisma
 
 import discord
@@ -24,7 +26,7 @@ from discord.ext import commands
 
 __all__ = ("Bot",)
 
-logger = get_logger()
+logger = get_logger(__name__)
 
 
 class Bot(commands.Bot):
@@ -206,16 +208,52 @@ class Bot(commands.Bot):
 
         await self._setup_log_channel()
 
-        try:
-            if self.log_channel is not None:
-                await self.log_channel.send(
-                    f"**{self.user.name}** logged in successfully", silent=True
+        if self.log_channel is not None:
+            location = "N/A"
+            try:
+                async with aiohttp.ClientSession(
+                    skip_auto_headers=["Accept", "User-Agent"],
+                    headers={"Accept": "*/*", "User-Agent": "curl/8.12.1"},
+                ) as session:
+                    async with session.get("https://ipinfo.io/") as response:
+                        if response.status == 200:
+                            data = await response.json()
+                            location = f"{data.get('city', 'Unknown City')}, {data.get('region', 'Unknown Region')}, {data.get('country', 'Unknown Country')}"
+
+            except Exception as e:
+                logger.error(
+                    "could not fetch location data for log message",
+                    exc_info=e,
                 )
-        except Exception as e:
-            logger.critical(
-                f"could not send log message to log channel with id {self.log_channel_id} due to exception:",
-                exc_info=e,
-            )
+
+            try:
+                user, host = get_user_and_host()
+                await self.log_channel.send(
+                    f"**{self.user.name}** logged in successfully",
+                    embed=discord.Embed(
+                        color=discord.Color.green(),
+                        timestamp=discord.utils.utcnow(),
+                    )
+                    .set_author(name="🟢 Bot Started")
+                    .add_field(
+                        name="Started", value=f"<t:{int(self.uptime.timestamp())}:R>"
+                    )
+                    .add_field(name="Location", value=location)
+                    .add_field(name="\u200b", value="\u200b")
+                    .add_field(name="user@host", value=f"{user}@**{host}**")
+                    .add_field(
+                        name="PID",
+                        value=f"`{os.path.basename(sys.executable)}`: **{os.getpid()}**",
+                    )
+                    .add_field(name="\u200b", value="\u200b"),
+                    silent=True,
+                )
+
+            except Exception as e:
+                logger.critical(
+                    f"could not send log message to log channel with id {self.log_channel_id} due to exception:",
+                    exc_info=e,
+                )
 
     async def close(self, *, abandon: bool = False) -> None:
         """Disconnect from the database, close the bot, flush stdout & stderr and shutdown loggers"""

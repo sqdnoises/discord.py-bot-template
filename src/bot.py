@@ -11,7 +11,7 @@ import os
 import sys
 
 if __name__ == "__main__":
-    from termcolors import *
+    from .termcolors import *
 
     executable = os.path.split(sys.executable)[-1]
     if executable.endswith(".exe"):
@@ -28,6 +28,9 @@ if __name__ == "__main__":
 
 import logging
 from datetime import datetime
+
+import discord
+from dotenv import load_dotenv
 
 from .config import (
     BOT_NAME,
@@ -46,14 +49,12 @@ from .utils import (
 from .classes import Bot
 from .termcolors import *
 
-import discord
-from dotenv import load_dotenv
-
-setup_logging(level=logging.DEBUG if DEBUG else None)
+logger = get_logger(__name__)
+if not logger.hasHandlers():
+    setup_logging(name=BOT_NAME, level=logging.DEBUG if DEBUG else None)
 discord.utils.setup_logging(root=False)
 
-logger = get_logger()
-logger.info("initialising")
+logger.info("initialising bot")
 
 if DEBUG:
     logger.debug("Houston, we have a code GRAY (DEBUG)")
@@ -82,7 +83,7 @@ if LOGS_FOLDER:
 
 print_versions()
 
-load_dotenv()
+load_dotenv(override=True)
 logger.info("loaded environment variables")
 
 bot = Bot(
@@ -97,8 +98,8 @@ bot = Bot(
 print_terminal_size()
 
 
-def start(*args, **kwargs):
-    """Start the bot"""
+def start(*args, **kwargs) -> None:
+    """Start the Discord bot."""
     logger.info(f"starting {BOT_NAME}")
 
     if not ADMINS:

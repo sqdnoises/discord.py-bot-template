@@ -210,7 +210,7 @@ if __name__ == "__main__":
         if padding is not None:
             text = (pad := padding * " ") + text + pad
 
-        return f"{bg_color or ""}{text}{reset}"
+        return f"{bg_color or ''}{text}{reset}"
 
     def bprint(text: Any, padding: int = 2) -> None:
         print((" " * padding) + str(text), end="", flush=True)

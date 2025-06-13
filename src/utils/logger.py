@@ -3,7 +3,6 @@ import sys
 import logging
 from typing import Optional, Any
 
-from ..config import BOT_NAME
 from ..termcolors import *
 
 __all__ = (
@@ -49,13 +48,16 @@ class ColourFormatter(logging.Formatter):
         (logging.CRITICAL, bg_rgb(200, 0, 0) + white),
     ]
 
-    FORMATS = {
-        level: logging.Formatter(
-            f"{bold + black}%(asctime)s{reset} {color}%(levelname)-8s{reset} {red}%(name)s{reset} %(message)s",
-            "%Y-%m-%d %H:%M:%S",
-        )
-        for level, color in LEVEL_COLORS
-    }
+    def __init__(self, *args, name_color: Optional[str] = None, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+
+        self.FORMATS = {
+            level: logging.Formatter(
+                f"{bold + black}%(asctime)s{reset} {color}%(levelname)-8s{reset} {name_color or red}%(name)s{reset} %(message)s",
+                "%Y-%m-%d %H:%M:%S",
+            )
+            for level, color in self.LEVEL_COLORS
+        }
 
     def format(self, record):
         formatter = self.FORMATS.get(record.levelno)
@@ -76,12 +78,13 @@ class ColourFormatter(logging.Formatter):
 
 def setup_logging(
     *,
+    name: str,
+    name_color: Optional[str] = None,
     handler: Optional[logging.Handler] = None,
     formatter: Optional[logging.Formatter] = None,
     level: Optional[int] = None,
     root: bool = False,
 ) -> None:
-
     if level is None:
         level = logging.INFO
 
@@ -92,7 +95,7 @@ def setup_logging(
         if isinstance(handler, logging.StreamHandler) and stream_supports_colour(
             handler.stream
         ):
-            formatter = ColourFormatter()
+            formatter = ColourFormatter(name_color=name_color)
         else:
             dt_fmt = "%Y-%m-%d %H:%M:%S"
             formatter = logging.Formatter(
@@ -102,7 +105,7 @@ def setup_logging(
     if root:
         logger = logging.getLogger()
     else:
-        logger = logging.getLogger(BOT_NAME)
+        logger = logging.getLogger(name)
 
     handler.setLevel(level)
     handler.setFormatter(formatter)
@@ -110,6 +113,5 @@ def setup_logging(
     logger.addHandler(handler)
 
 
-def get_logger() -> logging.Logger:
-    """Get the logger for the bot."""
-    return logging.getLogger(BOT_NAME)
+def get_logger(name: str) -> logging.Logger:
+    return logging.getLogger(name)

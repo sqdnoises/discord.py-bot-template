@@ -1,7 +1,3 @@
-"""
-This module contains utilities that would be useful in the bot.
-"""
-
 from .bot import *
 from .colors import *
 from .console import *

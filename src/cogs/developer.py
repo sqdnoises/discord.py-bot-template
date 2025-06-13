@@ -22,7 +22,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
-logger = get_logger()
+logger = get_logger(__name__)
 
 
 class Developer(Cog):

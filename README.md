@@ -92,14 +92,11 @@ Make sure to replace `user` with your GitHub username and `repo` with your repos
 ## Setting up & running the bot
 
 ### create a `.env` file
-`.env` template
-```python
-TOKEN="discord bot token"
-```
+Copy or rename the [`.env.example`](.env.example) file to `.env` and configure `.env` appropriately.
 
 This file contains secret environmental variables that are not meant to be shared with anyone.
 
-The bot uses the `TOKEN` variable to login into the Discord bot.
+You **must** configure the `TOKEN` and `DATABASE_URL` variable. Review other variables in the file for optional configurations.
 
 ### install uv
 [Installation instructions here](https://github.com/astral-sh/uv#installation)\

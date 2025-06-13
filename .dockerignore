@@ -1,0 +1,34 @@
+# cache and temp
+__pycache__/
+*.pyc
+*.pyo
+*.swp
+*.tmp
+.cache
+*.cache
+.DS_Store
+temp/
+
+# virtual environments
+.venv/
+venv/
+
+# logs
+logs/
+*.log
+
+# IDE
+.vscode/
+.idea/
+
+# local history
+.history/
+
+# Others
+.git/
+/scripts/
+.dockerignore
+.env.example
+.gitignore
+docker-compose.yml
+Dockerfile

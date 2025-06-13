@@ -12,7 +12,7 @@ from discord.ext import commands
 
 __all__ = ("CommandTree",)
 
-logger = get_logger()
+logger = get_logger(__name__)
 
 
 class CommandTree(app_commands.CommandTree):

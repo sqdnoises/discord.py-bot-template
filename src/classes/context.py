@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING, Any, Optional, Sequence
 from datetime import datetime
 
-from .. import utils
+from ..utils import cleanup_code
 
 if TYPE_CHECKING:
     from .bot import Bot
@@ -26,7 +26,7 @@ class Context(commands.Context):
         self.voice = (
             self.author.voice if isinstance(self.author, discord.Member) else None
         )
-        self.cleaned_up_code = utils.cleanup_code(self.message.content)
+        self.cleaned_up_code = cleanup_code(self.message.content)
 
     async def edit(
         self,

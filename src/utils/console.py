@@ -8,33 +8,14 @@ from .colors import strip_color
 from .logger import get_logger
 
 __all__ = (
-    "mprint",
     "print_versions",
     "print_terminal_size",
+    "mprint",
     "get_user_and_host",
     "detect_platform",
 )
 
-logger = get_logger()
-
-
-def mprint(text: str = "", fillchar: str = " ", end: str = "\n", flush: bool = False):
-    """Print text in the middle of the terminal if possible, and normally if not"""
-
-    try:
-        width = os.get_terminal_size().columns
-
-    except:
-        print(text, end=end, flush=flush)
-
-    else:
-        text = str(text)
-        color_stripped = strip_color(text)
-
-        centered_text = color_stripped.center(width, fillchar).replace(
-            color_stripped, text
-        )
-        print(centered_text, end=end, flush=flush)
+logger = get_logger(__name__)
 
 
 def print_versions():
@@ -53,11 +34,32 @@ def print_terminal_size():
         )
 
 
-def get_user_and_host():
+def mprint(
+    text: str = "", fillchar: str = " ", end: str = "\n", flush: bool = False
+) -> None:
+    """Print text in the middle of the terminal if possible, and normally if not"""
+
+    try:
+        width = os.get_terminal_size().columns
+
+    except:
+        print(text, end=end, flush=flush)
+
+    else:
+        text = str(text)
+        color_stripped = strip_color(text)
+
+        centered_text = color_stripped.center(width, fillchar).replace(
+            color_stripped, text
+        )
+        print(centered_text, end=end, flush=flush)
+
+
+def get_user_and_host() -> tuple[str | None, str | None]:
     """Gets the username and hostname in a cross-platform way.
 
     Returns:
-        tuple: A tuple containing the username (str) and hostname (str), or None for either value if it cannot be retrieved.
+        tuple[str | None, str | None]: A tuple containing the username (str) and hostname (str), or None for either value if it cannot be retrieved.
     """
 
     username = None
@@ -78,7 +80,7 @@ def get_user_and_host():
     return username, hostname
 
 
-def detect_platform():
+def detect_platform() -> str:
     """Detect what platform the code is being run at"""
 
     if "ANDROID_ROOT" in os.environ:
