@@ -156,6 +156,17 @@ make sure your venv is activated and run:
 python3 -m src  # py -m src/python -m src on Windows
 ```
 
+### running (with docker)
+make sure docker is installed on your device/server and run:
+```bash
+docker compose up --build
+```
+
+or to run it detached:
+```bash
+docker compose up --build -d
+```
+
 ### post-run
 Since the bot's profile has been set up for the first time, you need to tell Discord that your bot has slash commands.\
 For this you need to use `!sync` in a server the bot is in after running the bot for the first time.
