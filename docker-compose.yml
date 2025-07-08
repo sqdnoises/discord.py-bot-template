@@ -3,9 +3,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: ai-bot
+    container_name: bot
     restart: unless-stopped
     env_file: .env
     tty: true
     volumes:
       - ./logs:/bot/logs
+      - ./src/cogs:/bot/src/cogs
