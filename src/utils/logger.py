@@ -1,9 +1,9 @@
 import os
 import sys
 import logging
-from typing import Optional, Any
+from typing import Optional, Any, cast
 
-from ..termcolors import *
+from .termcolors import *
 
 __all__ = (
     "is_docker",
@@ -48,7 +48,7 @@ class ColourFormatter(logging.Formatter):
         (logging.CRITICAL, bg_rgb(200, 0, 0) + white),
     ]
 
-    def __init__(self, *args, name_color: Optional[str] = None, **kwargs) -> None:
+    def __init__(self, *args: Any, name_color: Optional[str] = None, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 
         self.FORMATS = {
@@ -59,7 +59,7 @@ class ColourFormatter(logging.Formatter):
             for level, color in self.LEVEL_COLORS
         }
 
-    def format(self, record):
+    def format(self, record: logging.LogRecord) -> str:
         formatter = self.FORMATS.get(record.levelno)
         if formatter is None:
             formatter = self.FORMATS[logging.DEBUG]
@@ -89,12 +89,12 @@ def setup_logging(
         level = logging.INFO
 
     if handler is None:
-        handler = logging.StreamHandler()
+        handler = logging.StreamHandler(sys.stderr)
 
     if formatter is None:
-        if isinstance(handler, logging.StreamHandler) and stream_supports_colour(
-            handler.stream
-        ):
+        # Cast to Any to suppress 'Unknown' generic type argument warnings
+        stream = cast(Any, getattr(handler, "stream", None))
+        if isinstance(handler, logging.StreamHandler) and stream_supports_colour(stream):
             formatter = ColourFormatter(name_color=name_color)
         else:
             dt_fmt = "%Y-%m-%d %H:%M:%S"
@@ -110,7 +110,9 @@ def setup_logging(
     handler.setLevel(level)
     handler.setFormatter(formatter)
     logger.setLevel(logging.DEBUG)
-    logger.addHandler(handler)
+    
+    # Cast back to logging.Handler to strip the partially unknown type for strict mode
+    logger.addHandler(cast(logging.Handler, handler))
 
 
 def get_logger(name: str) -> logging.Logger:
